@@ -14,8 +14,8 @@ export default function AdminPanel() {
   const [token, setToken] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [users, setUsers] = useState([]);
-  const [bookings, setBookings] = useState([]);
+  const [users, setUsers] = useState<any[]>([]);
+  const [bookings, setBookings] = useState<any[]>([]);
   const [page, setPage] = useState(1);
   const [limit, setLimit] = useState(10);
 const [selectedBooking, setSelectedBooking] = useState(null);
