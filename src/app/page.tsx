@@ -93,16 +93,18 @@ const [refundedAmount, setRefundedAmount] = useState("");
     fetchBookings();
   };
 
-  if (!token) {
-    return (
-      <div className="p-4 max-w-md mx-auto space-y-4">
-        <h1 className="text-xl font-bold">Admin Login</h1>
+if (!token) {
+  return (
+    <div className="h-screen flex items-center justify-center">
+      <div className="p-6 max-w-sm w-full bg-white rounded shadow space-y-4">
+        <h1 className="text-xl font-bold text-center">Admin Login</h1>
         <Input placeholder="Email" value={email} onChange={(e) => setEmail(e.target.value)} />
         <Input type="password" placeholder="Password" value={password} onChange={(e) => setPassword(e.target.value)} />
-        <Button onClick={login}>Login</Button>
+        <Button className="w-full" onClick={login}>Login</Button>
       </div>
-    );
-  }
+    </div>
+  );
+}
 
   return (
     <div className="p-4 space-y-6">
@@ -117,27 +119,41 @@ const [refundedAmount, setRefundedAmount] = useState("");
           <TabsTrigger value="bookings">Bookings</TabsTrigger>
         </TabsList>
 
-        <TabsContent value="users">
-          <Card>
-            <CardContent className="pt-4">
-              <h2 className="text-xl font-bold mb-4">Users</h2>
-              <div className="space-y-4">
-                {users.map(user => (
-                  <div key={user.id} className="border p-4 rounded space-y-2">
-                    <div><strong>Name:</strong> {user.firstName} {user.lastName}</div>
-                    <div><strong>Email:</strong> {user.email}</div>
-                    <div><strong>Phone:</strong> {user.phone}</div>
-                    <div><strong>Active:</strong> {user.isActive ? 'Yes' : 'No'}</div>
-                    <div className="flex space-x-2">
-                      <Button onClick={() => suspendUser(user.id)}>Suspend</Button>
-                      <Button variant="destructive" onClick={() => deleteUser(user.id)}>Delete</Button>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </CardContent>
-          </Card>
-        </TabsContent>
+       <TabsContent value="users">
+  <Card>
+    <CardContent className="pt-4">
+      <h2 className="text-xl font-bold mb-4">Users</h2>
+      <div className="overflow-x-auto">
+        <table className="min-w-full border text-sm">
+          <thead>
+            <tr className="bg-gray-100 text-left">
+              <th className="p-2 border">Name</th>
+              <th className="p-2 border">Email</th>
+              <th className="p-2 border">Phone</th>
+              <th className="p-2 border">Active</th>
+              <th className="p-2 border">Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            {users.map((user) => (
+              <tr key={user.id} className="border-t">
+                <td className="p-2 border">{user.firstName} {user.lastName}</td>
+                <td className="p-2 border">{user.email}</td>
+                <td className="p-2 border">{user.phone}</td>
+                <td className="p-2 border">{user.isActive ? 'Yes' : 'No'}</td>
+                <td className="p-2 border space-x-2">
+                  <Button size="sm" onClick={() => suspendUser(user.id)}>Suspend</Button>
+                  <Button size="sm" variant="destructive" onClick={() => deleteUser(user.id)}>Delete</Button>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    </CardContent>
+  </Card>
+</TabsContent>
+
 
         <TabsContent value="bookings">
           <Card>
