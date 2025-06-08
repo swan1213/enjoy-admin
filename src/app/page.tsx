@@ -8,7 +8,7 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { toast } from "sonner";
-
+import { Loader2 } from 'lucide-react';
 export default function AdminPanel() {
   // const router = useRouter();
   const [token, setToken] = useState('');
@@ -20,6 +20,9 @@ export default function AdminPanel() {
   const [limit, setLimit] = useState(10);
 const [selectedBooking, setSelectedBooking] = useState(null);
 const [refundedAmount, setRefundedAmount] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [loadingUsers, setLoadingUsers] = useState(false);
+  const [loadingBookings, setLoadingBookings] = useState(false);
 
   useEffect(() => {
     const savedToken =    localStorage.getItem('token');
@@ -32,6 +35,7 @@ const [refundedAmount, setRefundedAmount] = useState("");
    const baseUrl:string =`https://enjoy-mobile-api.onrender.com`;
   const login = async () => {
     try {
+          setLoading(true);
       const res = await axios.post(`${baseUrl}/auth/signin`, { email, password });
       localStorage.setItem('token', res.data.accessToken);
       setToken(res.data.accessToken);
@@ -40,6 +44,8 @@ const [refundedAmount, setRefundedAmount] = useState("");
       // router.push('/admin');
     } catch (err) {
       alert('Login failed');
+    }finally{
+          setLoading(false);
     }
   };
 
@@ -74,7 +80,7 @@ const [refundedAmount, setRefundedAmount] = useState("");
   const fetchBookings = async (authToken = token) => {
     const page =1;
     const limit=100
-    const res = await axios.get(`http://localhost:8000/bookings/admin/all?limit=${Number(limit)}&page=${Number(page)}`, {
+    const res = await axios.get(`${baseUrl}/bookings/admin/all?limit=${Number(limit)}&page=${Number(page)}`, {
       // params: { search },
       headers: { Authorization: `Bearer ${authToken}` },
 
@@ -100,7 +106,9 @@ if (!token) {
         <h1 className="text-xl font-bold text-center">Admin Login</h1>
         <Input placeholder="Email" value={email} onChange={(e) => setEmail(e.target.value)} />
         <Input type="password" placeholder="Password" value={password} onChange={(e) => setPassword(e.target.value)} />
-        <Button className="w-full" onClick={login}>Login</Button>
+     <Button className="w-full" onClick={login} disabled={loading}>
+            {loading ? <Loader2 className="animate-spin h-4 w-4" /> : 'Login'}
+          </Button>
       </div>
     </div>
   );
