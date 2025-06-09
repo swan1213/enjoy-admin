@@ -32,12 +32,8 @@ export default function UserDetailsModal({
     console.log(id);
     try {
         setSuspending(true);
-       await axios.patch(`${baseUrl}/auth/admin/${id}/suspend`, {
-            headers:{
-                Authorization:`Bearer ${savedToken}`
-            }
-        })
-          alert('User suspended successfully');
+        onSuspendUser(id);
+        onClose()
     } catch (error) {
      alert('Error suspending user');
     }finally{
@@ -49,12 +45,9 @@ export default function UserDetailsModal({
     console.log(id);
     try {
         setDeleting(true);
-       await axios.delete(`${baseUrl}/auth/admin/${id}`, {
-            headers:{
-                Authorization:`Bearer ${savedToken}`
-            }
-        })
-          alert('User deleted successfully');
+        onDeleteUser(id)
+        onClose()
+        
     } catch (error) {
      alert('Error deleting user');
     }finally{

@@ -7,6 +7,8 @@ import { User } from '@/types';
 import UserTable from './user-table';
 import SearchBar from './searchbar';
 import UserDetailsModal from './userdetails';
+import baseUrl from './baseurl';
+import axios from 'axios';
 
 
 interface UserManagementProps {
@@ -28,7 +30,7 @@ export default function UserManagement({
   const [userSearch, setUserSearch] = useState('');
   const [selectedUser, setSelectedUser] = useState<User | null>(null);
   const [showUserDetails, setShowUserDetails] = useState(false);
-
+  
   useEffect(() => {
     if (!userSearch.trim()) {
       setFilteredUsers(users);
@@ -46,6 +48,7 @@ export default function UserManagement({
     setSelectedUser(user);
     setShowUserDetails(true);
   };
+
 
   return (
     <div className="space-y-6">

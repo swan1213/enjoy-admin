@@ -118,7 +118,42 @@ export default function AdminPanel() {
       setLoadingUsers(false);
     }
   };
+ const suspendUser =async(id:string)=>{
+    console.log(id);
+    try {
+        // setSuspending(true);
+       await axios.patch(`${baseUrl}/auth/admin/${id}/suspend`, {
+            headers:{
+                Authorization:`Bearer ${localStorage.getItem('token')}`
+            }
+        })
+        fetchUsers(localStorage.getItem('token')?.toString())
+          alert('Operation successfully');
+    } catch (error) {
+     alert('Error suspending user');
+    }finally{
+        // setSuspending(false);
+    }
+  }
 
+    const deleteUser =async(id:string)=>{
+    console.log(id);
+    try {
+        // setDeleting(true);
+       await axios.delete(`${baseUrl}/auth/admin/${id}`, {
+            headers:{
+                Authorization:`Bearer ${localStorage.getItem('token')}`
+            }
+        })
+           fetchUsers(localStorage.getItem('token')?.toString())
+          alert('User deleted successfully');
+        
+    } catch (error) {
+     alert('Error deleting user');
+    }finally{
+        // setDeleting(false);
+    }
+  }
 
   const fetchBookings = async (authToken = token) => {
     try {
@@ -186,7 +221,7 @@ export default function AdminPanel() {
           {currentPage === 'users' ? <UserManagement 
           users={users} loading={loading} 
           onRefresh={()=>fetchUsers() } 
-          onSuspendUser={()=>null } onDeleteUser={()=>null } /> 
+          onSuspendUser={suspendUser} onDeleteUser={deleteUser} /> 
           : <TripManagement booking={bookings} loadingBookings={false} 
           onRefresh={()=>fetchBookings() } 
            

@@ -30,7 +30,7 @@ interface TripManagementProps {
     return (
      <div className="space-y-6">
       <div className="flex justify-between items-center">
-        <h2 className="text-2xl font-bold text-gray-800">User Management</h2>
+        <h2 className="text-2xl font-bold text-gray-800">Trip Management</h2>
         <Button onClick={onRefresh} disabled={loadingBookings} className="flex items-center gap-2">
           {loadingBookings ? <Loader2 className="animate-spin h-4 w-4" /> : null}
           Refresh bookings
