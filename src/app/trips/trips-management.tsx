@@ -4,17 +4,21 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Booking } from "@/types";
 import { Eye, Loader2, Search } from "lucide-react";
-import { useState } from "react";
+import { SetStateAction, useState } from "react";
 import BookingDetailsModal from "./tripdetails";
 import TripTable from "../trip-table";
 interface TripManagementProps {
   booking: Booking[];
+  onSearch:React.ChangeEventHandler<HTMLInputElement>;
+  searchValue:string;
   loadingBookings: boolean;
   onRefresh: () => void;
 }
   export function TripManagement({
     loadingBookings,
     onRefresh,
+    onSearch,
+    searchValue,
     booking,
   }:TripManagementProps){
    const [tripSearch, setTripSearch] = useState('');
@@ -30,7 +34,7 @@ interface TripManagementProps {
     return (
      <div className="space-y-6">
       <div className="flex justify-between items-center">
-        <h2 className="text-2xl font-bold text-gray-800">Trip Management</h2>
+        <h2 className="text-2xl font-bold text-gray-800">Gestion des voyages</h2>
         <Button onClick={onRefresh} disabled={loadingBookings} className="flex items-center gap-2">
           {loadingBookings ? <Loader2 className="animate-spin h-4 w-4" /> : null}
           Refresh bookings
@@ -43,9 +47,9 @@ interface TripManagementProps {
             <div className="relative flex-1 max-w-md">
               <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
               <Input
-                placeholder="Search trips by customer, location..."
-                value={tripSearch}
-                onChange={(e) => setTripSearch(e.target.value)}
+                placeholder="nom, email,emplacement..."
+                value={searchValue}
+                onChange={onSearch}
                 className="pl-10"
               />
             </div>

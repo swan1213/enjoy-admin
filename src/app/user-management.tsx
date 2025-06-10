@@ -14,6 +14,8 @@ import axios from 'axios';
 interface UserManagementProps {
   users: User[];
   loading: boolean;
+  onSearch:React.ChangeEventHandler<HTMLInputElement>;
+  searchValue:string;
   onRefresh: () => void;
   onSuspendUser: (id: string) => void;
   onDeleteUser: (id: string) => void;
@@ -22,6 +24,8 @@ interface UserManagementProps {
 export default function UserManagement({ 
   users, 
   loading, 
+  searchValue,
+  onSearch,
   onRefresh, 
   onSuspendUser, 
   onDeleteUser 
@@ -64,8 +68,8 @@ export default function UserManagement({
         <CardContent className="p-6">
           <SearchBar
             placeholder="Rechercher des utilisateurs par nom, email ou téléphone..."
-            value={userSearch}
-            onChange={setUserSearch}
+            value={searchValue}
+            onSearch={onSearch}
             resultCount={filteredUsers.length}
             totalCount={users.length}
           />

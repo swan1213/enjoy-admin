@@ -57,26 +57,73 @@ export default function AdminPanel() {
   }, [users, userSearch]);
 
   // Filter and sort bookings based on search (nearest date first)
-  useEffect(() => {
-    let filtered = bookings;
-    
-    if (bookingSearch.trim()) {
-      filtered = bookings.filter(booking => 
-        `${booking.customer?.firstName} ${booking.customer?.lastName}`.toLowerCase().includes(bookingSearch.toLowerCase()) ||
-        booking.customer?.email.toLowerCase().includes(bookingSearch.toLowerCase()) ||
-        booking.customer?.phone.includes(bookingSearch) ||
-        booking.departureLocation.toLowerCase().includes(bookingSearch.toLowerCase()) ||
-        booking.destinationLocation.toLowerCase().includes(bookingSearch.toLowerCase())
-      );
+ useEffect(() => {
+  const search = bookingSearch.trim().toLowerCase();
+
+  let filtered = bookings.filter((booking) => {
+    const fullName = `${booking.customer?.firstName ?? ''} ${booking.customer?.lastName ?? ''}`.toLowerCase();
+    const email = booking.customer?.email?.toLowerCase() ?? '';
+    const phone = booking.customer?.phone ?? '';
+    const departure = booking.departureLocation?.toLowerCase() ?? '';
+    const destination = booking.destinationLocation?.toLowerCase() ?? '';
+
+    return (
+      fullName.includes(search) ||
+      email.includes(search) ||
+      phone.includes(search) ||
+      departure.includes(search) ||
+      destination.includes(search)
+    );
+  });
+
+  // Sort by trip date (nearest first)
+  filtered = filtered.sort((a, b) =>
+    new Date(a.tripDateTime).getTime() - new Date(b.tripDateTime).getTime()
+  );
+
+  setBookings(filtered);
+
+  // If there's a search but no results, and search is now empty, fetch again
+  if (search.length === 0 && filtered.length === 0) {
+    const token = localStorage.getItem('token')?.toString();
+    if (token) {
+      fetchBookings(token);
     }
-    
-    // Sort by trip date (nearest first)
-    filtered.sort((a, b) => new Date(a.tripDateTime).getTime() - new Date(b.tripDateTime).getTime());
-    
-    setFilteredBookings(filtered);
-  }, [bookings, bookingSearch]);
+  }
+}, [bookingSearch]); 
 
 
+ useEffect(() => {
+  const search = bookingSearch.trim().toLowerCase();
+
+  let filtered = users.filter((user) => {
+    const fullName = `${user.firstName?? ''} ${user?.lastName ?? ''}`.toLowerCase();
+    const email = user?.email?.toLowerCase() ?? '';
+    const phone = user?.phone ?? '';
+ 
+
+    return (
+      fullName.includes(search) ||
+      email.includes(search) ||
+      phone.includes(search) 
+    );
+  });
+
+  // Sort by trip date (nearest first)
+  filtered = filtered.sort((a, b) =>
+    new Date(a.tripDateTime).getTime() - new Date(b.tripDateTime).getTime()
+  );
+
+  setUsers(filtered);
+
+  // If there's a search but no results, and search is now empty, fetch again
+  if (search.length === 0 && filtered.length === 0) {
+    const token = localStorage.getItem('token')?.toString();
+    if (token) {
+      fetchUsers(token);
+    }
+  }
+}, [userSearch]); 
 
   const login = async (email:string, password:string) => {
     console.log(email);
@@ -222,6 +269,8 @@ export default function AdminPanel() {
             <UserManagement 
               users={users} 
               loading={loading}
+              searchValue={userSearch}
+              onSearch={(e)=>setUserSearch(e.target.value)}
               onRefresh={() => fetchUsers()} 
               onSuspendUser={suspendUser} 
               onDeleteUser={deleteUser} 
@@ -229,6 +278,8 @@ export default function AdminPanel() {
           ) : (
             <TripManagement 
               booking={bookings} 
+              searchValue={bookingSearch}
+              onSearch={(e)=>setBookingSearch(e.target.value)}
               loadingBookings={false}
               onRefresh={() => fetchBookings()} 
             />

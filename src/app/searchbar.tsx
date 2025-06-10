@@ -5,12 +5,12 @@ import { Input } from '@/components/ui/input';
 interface SearchBarProps {
   placeholder: string;
   value: string;
-  onChange: (value: string) => void;
+  onSearch:React.ChangeEventHandler<HTMLInputElement>;
   resultCount: number;
   totalCount: number;
 }
 
-export default function SearchBar({ placeholder, value, onChange, resultCount, totalCount }: SearchBarProps) {
+export default function SearchBar({ placeholder, value, onSearch, resultCount, totalCount }: SearchBarProps) {
   return (
     <div className="flex items-center gap-4 mb-6">
       <div className="relative flex-1 max-w-md">
@@ -18,7 +18,7 @@ export default function SearchBar({ placeholder, value, onChange, resultCount, t
         <Input
           placeholder={placeholder}
           value={value}
-          onChange={(e) => onChange(e.target.value)}
+          onChange={onSearch}
           className="pl-10"
         />
       </div>
