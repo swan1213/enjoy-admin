@@ -19,39 +19,39 @@ export default function LoginForm({ onLogin, loading }: LoginFormProps) {
     await onLogin(email, password);
   };
 
-  return (
+    return (
     <div className="min-h-screen flex items-center justify-center bg-gray-100">
       <Card className="w-full max-w-md">
         <CardContent className="p-8 space-y-6">
           <div className="text-center">
-            <h1 className="text-2xl font-bold text-gray-800 mb-2">Admin Panel</h1>
-            <p className="text-gray-600">Sign in to access the dashboard</p>
+            <h1 className="text-2xl font-bold text-gray-800 mb-2">Panneau d'administration</h1>
+            <p className="text-gray-600">Connectez-vous pour accéder au tableau de bord</p>
           </div>
-          <form onSubmit={handleSubmit} className="space-y-4">
+          <div className="space-y-4">
             <Input 
-              placeholder="Email address" 
-              value={email} 
-              onChange={(e) => setEmail(e.target.value)} 
+              placeholder="Adresse email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
               className="h-11"
               required
             />
             <Input 
-              type="password" 
-              placeholder="Password" 
-              value={password} 
+              type="password"
+              placeholder="Mot de passe"
+              value={password}
               onChange={(e) => setPassword(e.target.value)}
               className="h-11"
               required
             />
             <Button 
-              type="submit"
-              className="w-full h-11" 
+              onClick={handleSubmit}
+              className="w-full h-11"
               disabled={loading}
             >
               {loading ? <Loader2 className="animate-spin h-4 w-4 mr-2" /> : null}
-              Sign In
+              Se connecter
             </Button>
-          </form>
+          </div>
         </CardContent>
       </Card>
     </div>

@@ -53,17 +53,17 @@ export default function UserManagement({
   return (
     <div className="space-y-6">
       <div className="flex justify-between items-center">
-        <h2 className="text-2xl font-bold text-gray-800">User Management</h2>
+        <h2 className="text-2xl font-bold text-gray-800">Gestion des utilisateurs</h2>
         <Button onClick={onRefresh} disabled={loading} className="flex items-center gap-2">
           {loading ? <Loader2 className="animate-spin h-4 w-4" /> : null}
-          Refresh Users
+          Actualiser les utilisateurs
         </Button>
       </div>
 
       <Card>
         <CardContent className="p-6">
           <SearchBar
-            placeholder="Search users by name, email, or phone..."
+            placeholder="Rechercher des utilisateurs par nom, email ou téléphone..."
             value={userSearch}
             onChange={setUserSearch}
             resultCount={filteredUsers.length}

@@ -7,8 +7,6 @@ import axios from "axios";
 import baseUrl from "./baseurl";
 import { useState } from "react";
 
-
-
 interface UserDetailsModalProps {
   user: User | null;
   open: boolean;
@@ -17,87 +15,84 @@ interface UserDetailsModalProps {
   onDeleteUser: (id: string) => void;
 }
 
-export default function UserDetailsModal({ 
-  user, 
-  open, 
-  onClose, 
-  onSuspendUser, 
-  onDeleteUser 
+export default function UserDetailsModal({
+  user,
+  open,
+  onClose,
+  onSuspendUser,
+  onDeleteUser
 }: UserDetailsModalProps) {
-    const savedToken = localStorage.getItem('token');
-    const [isSuspending, setSuspending] =useState(false);
-      const [isdeleting, setDeleting] =useState(false);
+  
+  const savedToken = localStorage.getItem('token');
+  const [isSuspending, setSuspending] = useState(false);
+  const [isdeleting, setDeleting] = useState(false);
+  
   if (!user) return null;
-  const suspendUser =async(id:string)=>{
+  
+  const suspendUser = async(id: string) => {
     console.log(id);
     try {
-        setSuspending(true);
-        onSuspendUser(id);
-        onClose()
+      setSuspending(true);
+      onSuspendUser(id);
+      onClose()
     } catch (error) {
-     alert('Error suspending user');
-    }finally{
-        setSuspending(false);
+      alert('Erreur lors de la suspension de l\'utilisateur');
+    } finally {
+      setSuspending(false);
     }
   }
-
-  const deleteUser =async(id:string)=>{
+  
+  const deleteUser = async(id: string) => {
     console.log(id);
     try {
-        setDeleting(true);
-        onDeleteUser(id)
-        onClose()
-        
+      setDeleting(true);
+      onDeleteUser(id)
+      onClose()
     } catch (error) {
-     alert('Error deleting user');
-    }finally{
-        setDeleting(false);
+      alert('Erreur lors de la suppression de l\'utilisateur');
+    } finally {
+      setDeleting(false);
     }
   }
-
   
   return (
     <Dialog open={open} onOpenChange={onClose}>
       <DialogContent className="max-w-2xl max-h-[80vh] overflow-y-auto">
         <DialogHeader>
-          <DialogTitle>User Details</DialogTitle>
+          <DialogTitle>Détails de l'utilisateur</DialogTitle>
         </DialogHeader>
         <div className="space-y-6 p-4">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div className="space-y-2">
-              <p><strong>Name:</strong> {user.firstName} {user.lastName}</p>
-              <p><strong>Email:</strong> {user.email}</p>
-              <p><strong>Phone:</strong> {user.phone}</p>
+              <p><strong>Nom :</strong> {user.firstName} {user.lastName}</p>
+              <p><strong>Email :</strong> {user.email}</p>
+              <p><strong>Téléphone :</strong> {user.phone}</p>
             </div>
             <div className="space-y-2">
-              <p><strong>Status:</strong> 
+              <p><strong>Statut :</strong>
                 <span className={`ml-2 px-2 py-1 rounded text-xs ${user.isActive ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'}`}>
-                  {user.isActive ? 'Active' : 'Suspended'}
+                  {user.isActive ? 'Actif' : 'Suspendu'}
                 </span>
               </p>
-              
             </div>
           </div>
           
           <div className="flex gap-2 pt-4 border-t">
-            <Button 
+            <Button
               onClick={() => suspendUser(user.id)}
               variant={user.isActive ? "outline" : "default"}
               className="flex items-center gap-2"
-            > 
-            {
-                isSuspending ? <Loader2 /> : <UserX className="h-4 w-4" />
-            }
-            {user.isActive ? (isSuspending ? 'Suspending...' : 'Suspend') : 'Activate'}
-             
+            >
+              {isSuspending ? <Loader2 className="h-4 w-4 animate-spin" /> : <UserX className="h-4 w-4" />}
+              {user.isActive ? (isSuspending ? 'Suspension...' : 'Suspendre') : 'Activer'}
             </Button>
-            <Button 
+            <Button
               onClick={() => deleteUser(user.id)}
               variant="destructive"
               className="flex items-center gap-2"
             >
-              <Trash2 className="h-4 w-4" />
-              Delete
+              {isdeleting ? <Loader2 className="h-4 w-4 animate-spin" /> : <Trash2 className="h-4 w-4" />}
+              {isdeleting ? 'Suppression...' : 'Supprimer'}
             </Button>
           </div>
         </div>

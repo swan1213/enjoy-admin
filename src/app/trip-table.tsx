@@ -71,10 +71,10 @@ export default function TripTable({ bookings, onViewDetails, onSendEmail }: Trip
     }
   };
 
-  if (bookings.length === 0) {
+if (bookings.length === 0) {
     return (
       <div className="text-center py-12">
-        <p className="text-gray-500">No trips found matching your search criteria.</p>
+        <p className="text-gray-500">Aucun voyage trouvé correspondant à vos critères de recherche.</p>
       </div>
     );
   }
@@ -84,12 +84,12 @@ export default function TripTable({ bookings, onViewDetails, onSendEmail }: Trip
       <table className="min-w-full border-collapse">
         <thead>
           <tr className="bg-gray-50 border-b">
-            <th className="text-left p-4 font-semibold text-gray-700">Customer</th>
-            <th className="text-left p-4 font-semibold text-gray-700">Phone</th>
+            <th className="text-left p-4 font-semibold text-gray-700">Client</th>
+            <th className="text-left p-4 font-semibold text-gray-700">Téléphone</th>
             <th className="text-left p-4 font-semibold text-gray-700">Email</th>
-            <th className="text-left p-4 font-semibold text-gray-700">Trip Date</th>
-            <th className="text-left p-4 font-semibold text-gray-700">Route</th>
-            <th className="text-left p-4 font-semibold text-gray-700">Status</th>
+            <th className="text-left p-4 font-semibold text-gray-700">Date du voyage</th>
+            <th className="text-left p-4 font-semibold text-gray-700">Itinéraire</th>
+            <th className="text-left p-4 font-semibold text-gray-700">Statut</th>
             <th className="text-left p-4 font-semibold text-gray-700">Actions</th>
           </tr>
         </thead>
@@ -102,9 +102,9 @@ export default function TripTable({ bookings, onViewDetails, onSendEmail }: Trip
               <td className="p-4 text-gray-600">{booking.customer?.phone}</td>
               <td className="p-4 text-gray-600">{booking.customer?.email}</td>
               <td className="p-4 text-gray-600">
-                {new Date(booking.tripDateTime).toLocaleDateString()} <br />
+                {new Date(booking.tripDateTime).toLocaleDateString('fr-FR')} <br />
                 <span className="text-sm text-gray-500">
-                  {new Date(booking.tripDateTime).toLocaleTimeString()}
+                  {new Date(booking.tripDateTime).toLocaleTimeString('fr-FR')}
                 </span>
               </td>
               <td className="p-4 text-gray-600 max-w-48">
@@ -123,12 +123,14 @@ export default function TripTable({ bookings, onViewDetails, onSendEmail }: Trip
                    booking.status === 'PENDING' ? 'bg-yellow-100 text-yellow-800' :
                    'bg-red-100 text-red-800'
                 }`}>
-                  {booking.status}
+                  {booking.status === 'COMPLETED' ? 'Terminé' : 
+                   booking.status === 'PENDING' ? 'En attente' : 
+                   booking.status === 'CANCELLED' ? 'Annulé' : booking.status}
                 </span>
                 {booking.cancellationStatus === 'PENDING' && (
                   <div className="mt-1">
                     <span className="px-2 py-1 rounded-full text-xs bg-orange-100 text-orange-800">
-                      Cancellation Pending
+                      Annulation en attente
                     </span>
                   </div>
                 )}
@@ -144,24 +146,24 @@ export default function TripTable({ bookings, onViewDetails, onSendEmail }: Trip
                         className="flex items-center gap-2"
                       >
                         <Mail className="h-4 w-4" />
-                        Send Email
+                        Envoyer un email
                       </Button>
                     </DialogTrigger>
                     <DialogContent className="sm:max-w-[525px]">
                       <DialogHeader>
-                        <DialogTitle>Send Email to Customer</DialogTitle>
+                        <DialogTitle>Envoyer un email au client</DialogTitle>
                         <DialogDescription>
-                          Send an email to {booking.customer?.firstName} {booking.customer?.lastName} ({booking.customer?.email})
+                          Envoyer un email à {booking.customer?.firstName} {booking.customer?.lastName} ({booking.customer?.email})
                         </DialogDescription>
                       </DialogHeader>
                       <div className="grid gap-4 py-4">
                         <div className="grid gap-2">
-                          <Label htmlFor="subject">Subject</Label>
+                          <Label htmlFor="subject">Objet</Label>
                           <Input
                             id="subject"
                             value={emailData.subject}
                             onChange={(e) => setEmailData(prev => ({ ...prev, subject: e.target.value }))}
-                            placeholder="Email subject"
+                            placeholder="Objet de l'email"
                           />
                         </div>
                         <div className="grid gap-2">
@@ -170,20 +172,20 @@ export default function TripTable({ bookings, onViewDetails, onSendEmail }: Trip
                             id="message"
                             value={emailData.message}
                             onChange={(e) => setEmailData(prev => ({ ...prev, message: e.target.value }))}
-                            placeholder="Email message"
+                            placeholder="Message de l'email"
                             className="min-h-[120px]"
                           />
                         </div>
                       </div>
                       <DialogFooter>
                         <Button variant="outline" onClick={handleCloseEmailModal} disabled={isSending}>
-                          Cancel
+                          Annuler
                         </Button>
                         <Button 
                           onClick={handleSendEmail} 
                           disabled={!emailData.subject.trim() || !emailData.message.trim() || isSending}
                         >
-                          {isSending ? 'Sending...' : 'Send Email'}
+                          {isSending ? 'Envoi en cours...' : 'Envoyer l\'email'}
                         </Button>
                       </DialogFooter>
                     </DialogContent>
@@ -196,7 +198,7 @@ export default function TripTable({ bookings, onViewDetails, onSendEmail }: Trip
                     className="flex items-center gap-2"
                   >
                     <Eye className="h-4 w-4" />
-                    View Details
+                    Voir les détails
                   </Button>
                 </div>
               </td>

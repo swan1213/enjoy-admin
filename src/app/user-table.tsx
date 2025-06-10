@@ -13,7 +13,7 @@ export default function UserTable({ users, onViewDetails }: UserTableProps) {
   if (users.length === 0) {
     return (
       <div className="text-center py-12">
-        <p className="text-gray-500">No users found matching your search criteria.</p>
+        <p className="text-gray-500">Aucun utilisateur trouvé correspondant à vos critères de recherche.</p>
       </div>
     );
   }
@@ -23,10 +23,10 @@ export default function UserTable({ users, onViewDetails }: UserTableProps) {
       <table className="min-w-full border-collapse">
         <thead>
           <tr className="bg-gray-50 border-b">
-            <th className="text-left p-4 font-semibold text-gray-700">Name</th>
+            <th className="text-left p-4 font-semibold text-gray-700">Nom</th>
             <th className="text-left p-4 font-semibold text-gray-700">Email</th>
-            <th className="text-left p-4 font-semibold text-gray-700">Phone</th>
-            <th className="text-left p-4 font-semibold text-gray-700">Status</th>
+            <th className="text-left p-4 font-semibold text-gray-700">Téléphone</th>
+            <th className="text-left p-4 font-semibold text-gray-700">Statut</th>
             <th className="text-left p-4 font-semibold text-gray-700">Actions</th>
           </tr>
         </thead>
@@ -40,7 +40,7 @@ export default function UserTable({ users, onViewDetails }: UserTableProps) {
                 <span className={`px-3 py-1 rounded-full text-xs font-medium ${
                   user.isActive ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'
                 }`}>
-                  {user.isActive ? 'Active' : 'Suspended'}
+                  {user.isActive ? 'Actif' : 'Suspendu'}
                 </span>
               </td>
               <td className="p-4">
@@ -51,7 +51,7 @@ export default function UserTable({ users, onViewDetails }: UserTableProps) {
                   className="flex items-center gap-2"
                 >
                   <Eye className="h-4 w-4" />
-                  View Details
+                  Voir les détails
                 </Button>
               </td>
             </tr>

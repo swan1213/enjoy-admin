@@ -177,12 +177,12 @@ export default function AdminPanel() {
   return  < LoginForm onLogin={login} loading={loading}/>
   }
 
-  return (
+   return (
     <div className="flex h-screen bg-gray-100">
       {/* Sidebar */}
       <div className="w-64 bg-white shadow-lg border-r">
         <div className="p-6 border-b">
-          <h1 className="text-xl font-bold text-gray-800">Admin Panel</h1>
+          <h1 className="text-xl font-bold text-gray-800">Panneau d'administration</h1>
         </div>
         <nav className="mt-6">
           <button
@@ -192,7 +192,7 @@ export default function AdminPanel() {
             }`}
           >
             <Users className="h-5 w-5 mr-3" />
-            User Management
+            Gestion des utilisateurs
           </button>
           <button
             onClick={() => setCurrentPage('bookings')}
@@ -201,7 +201,7 @@ export default function AdminPanel() {
             }`}
           >
             <Calendar className="h-5 w-5 mr-3" />
-            Trip Management
+            Gestion des voyages
           </button>
           <div className="border-t mt-6 pt-6">
             <button
@@ -209,7 +209,7 @@ export default function AdminPanel() {
               className="w-full flex items-center px-6 py-3 text-left hover:bg-red-50 text-red-600 hover:text-red-700 transition-colors"
             >
               <LogOut className="h-5 w-5 mr-3" />
-              Logout
+              Déconnexion
             </button>
           </div>
         </nav>
@@ -218,15 +218,21 @@ export default function AdminPanel() {
       {/* Main Content */}
       <div className="flex-1 overflow-auto">
         <div className="p-8">
-          {currentPage === 'users' ? <UserManagement 
-          users={users} loading={loading} 
-          onRefresh={()=>fetchUsers() } 
-          onSuspendUser={suspendUser} onDeleteUser={deleteUser} /> 
-          : <TripManagement booking={bookings} loadingBookings={false} 
-          onRefresh={()=>fetchBookings() } 
-           
-          
-           />}
+          {currentPage === 'users' ? (
+            <UserManagement 
+              users={users} 
+              loading={loading}
+              onRefresh={() => fetchUsers()} 
+              onSuspendUser={suspendUser} 
+              onDeleteUser={deleteUser} 
+            />
+          ) : (
+            <TripManagement 
+              booking={bookings} 
+              loadingBookings={false}
+              onRefresh={() => fetchBookings()} 
+            />
+          )}
         </div>
       </div>
     </div>
