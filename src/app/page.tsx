@@ -1,34 +1,29 @@
 'use client'
+
+import { Users, Calendar, LogOut } from 'lucide-react';
+import toast, { Toaster } from 'react-hot-toast';
 import { useEffect, useState } from 'react';
-import { Dialog, DialogTrigger, DialogContent, DialogHeader, DialogFooter, DialogTitle } from "@/components/ui/dialog";
-import { Button } from '@/components/ui/button';
-import { Card, CardContent } from '@/components/ui/card';
-import { Input } from '@/components/ui/input';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Loader2, Users, Calendar, LogOut, Search, Eye, UserX, Trash2 } from 'lucide-react';
+import axios from 'axios';
+
+import { TripManagement } from './trips/trips-management';
 import UserManagement from './user-management';
 import LoginForm from './loginform';
-import { TripManagement } from './trips/trips-management';
-import axios from 'axios';
 import baseUrl from './baseurl';
+
 
 export default function AdminPanel() {
   const [token, setToken] = useState('');
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
   const [users, setUsers] = useState<any[]>([]);
   const [bookings, setBookings] = useState<any[]>([]);
   const [filteredUsers, setFilteredUsers] = useState<any[]>([]);
-  const [filteredBookings, setFilteredBookings] = useState<any[]>([]);
   const [currentPage, setCurrentPage] = useState('users');
-
   const [loading, setLoading] = useState(false);
   const [loadingUsers, setLoadingUsers] = useState(false);
   const [loadingBookings, setLoadingBookings] = useState(false);
   const [userSearch, setUserSearch] = useState('');
   const [bookingSearch, setBookingSearch] = useState('');
 
-  const [showApprovalDialog, setShowApprovalDialog] = useState(false);
+
 
   useEffect(() => {
     const savedToken = localStorage.getItem('token');
@@ -84,7 +79,8 @@ export default function AdminPanel() {
   setBookings(filtered);
 
   // If there's a search but no results, and search is now empty, fetch again
-  if (search.length === 0 && filtered.length === 0) {
+  console.log(search.length)
+  if (search.length === 0 ) {
     const token = localStorage.getItem('token')?.toString();
     if (token) {
       fetchBookings(token);
@@ -94,14 +90,12 @@ export default function AdminPanel() {
 
 
  useEffect(() => {
-  const search = bookingSearch.trim().toLowerCase();
+  const search = userSearch.trim().toLowerCase();
 
   let filtered = users.filter((user) => {
     const fullName = `${user.firstName?? ''} ${user?.lastName ?? ''}`.toLowerCase();
     const email = user?.email?.toLowerCase() ?? '';
     const phone = user?.phone ?? '';
- 
-
     return (
       fullName.includes(search) ||
       email.includes(search) ||
@@ -109,15 +103,10 @@ export default function AdminPanel() {
     );
   });
 
-  // Sort by trip date (nearest first)
-  filtered = filtered.sort((a, b) =>
-    new Date(a.tripDateTime).getTime() - new Date(b.tripDateTime).getTime()
-  );
-
   setUsers(filtered);
 
   // If there's a search but no results, and search is now empty, fetch again
-  if (search.length === 0 && filtered.length === 0) {
+  if (search.length === 0) {
     const token = localStorage.getItem('token')?.toString();
     if (token) {
       fetchUsers(token);
@@ -138,11 +127,13 @@ export default function AdminPanel() {
       setToken(res.data.accessToken);
       fetchUsers(res.data.accessToken);
     } catch (err) {
-      alert('Login failed');
+      console.log(err);
+      toast.error('Login failed');
     } finally {
       setLoading(false);
     }
   };
+
 
   const logout = () => {
     localStorage.removeItem('token');
@@ -175,9 +166,9 @@ export default function AdminPanel() {
             }
         })
         fetchUsers(localStorage.getItem('token')?.toString())
-          alert('Operation successfully');
+          toast.success('Operation successfully');
     } catch (error) {
-     alert('Error suspending user');
+     toast.error('Error suspending user');
     }finally{
         // setSuspending(false);
     }
@@ -193,10 +184,10 @@ export default function AdminPanel() {
             }
         })
            fetchUsers(localStorage.getItem('token')?.toString())
-          alert('User deleted successfully');
+          toast.success('User deleted successfully');
         
     } catch (error) {
-     alert('Error deleting user');
+     toast.error('Error deleting user');
     }finally{
         // setDeleting(false);
     }
@@ -286,6 +277,14 @@ export default function AdminPanel() {
           )}
         </div>
       </div>
+    {/* <Toaster 
+  position="top-right" 
+  toastOptions={{
+    style: {
+      zIndex: 9999,
+    },
+  }}
+/> */}
     </div>
   );
 }
