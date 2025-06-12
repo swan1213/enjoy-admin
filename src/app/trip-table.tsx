@@ -74,7 +74,8 @@ export default function TripTable({ bookings, onViewDetails, onSendEmail }: Trip
 if (bookings.length === 0) {
     return (
       <div className="text-center py-12">
-        <p className="text-gray-500">Aucun voyage trouvé correspondant à vos critères de recherche.</p>
+        <p className="text-gray-500">Aucun trajet ne correspond à vos critères de
+recherche.</p>
       </div>
     );
   }
@@ -86,7 +87,7 @@ if (bookings.length === 0) {
           <tr className="bg-gray-50 border-b">
             <th className="text-left p-4 font-semibold text-gray-700">Client</th>
             <th className="text-left p-4 font-semibold text-gray-700">Téléphone</th>
-            <th className="text-left p-4 font-semibold text-gray-700">Email</th>
+            <th className="text-left p-4 font-semibold text-gray-700">E-mail</th>
             <th className="text-left p-4 font-semibold text-gray-700">Date du voyage</th>
             <th className="text-left p-4 font-semibold text-gray-700">Itinéraire</th>
             <th className="text-left p-4 font-semibold text-gray-700">Statut</th>
@@ -123,9 +124,9 @@ if (bookings.length === 0) {
                    booking.status === 'PENDING' ? 'bg-yellow-100 text-yellow-800' :
                    'bg-red-100 text-red-800'
                 }`}>
-                  {booking.status === 'COMPLETED' ? 'Terminé' : 
-                   booking.status === 'PENDING' ? 'En attente' : 
-                   booking.status === 'CANCELLED' ? 'Annulé' : booking.status}
+                  {booking.status.toLowerCase() === 'completed' ? 'Terminé' : 
+                   booking.status.toLowerCase() === 'pending' ? 'En attente' : 
+                   booking.status.toLowerCase() === 'cancelled' ? 'Annulé' : booking.status}
                 </span>
                 {booking.cancellationStatus === 'PENDING' && (
                   <div className="mt-1">
@@ -137,7 +138,7 @@ if (bookings.length === 0) {
               </td>
               <td className="p-4">
                 <div className="flex items-center gap-2">
-                  <Dialog open={emailModal.open && emailModal.booking?.bookingId === booking.bookingId} onOpenChange={(open) => !open && handleCloseEmailModal()}>
+                  {/* <Dialog open={emailModal.open && emailModal.booking?.bookingId === booking.bookingId} onOpenChange={(open) => !open && handleCloseEmailModal()}>
                     <DialogTrigger asChild>
                       <Button
                         size="sm"
@@ -146,14 +147,14 @@ if (bookings.length === 0) {
                         className="flex items-center gap-2"
                       >
                         <Mail className="h-4 w-4" />
-                        Envoyer un email
+                        Envoyer un e-mail 
                       </Button>
                     </DialogTrigger>
                     <DialogContent className="sm:max-w-[525px]">
                       <DialogHeader>
-                        <DialogTitle>Envoyer un email au client</DialogTitle>
+                        <DialogTitle>Envoyer un e-mail au client </DialogTitle>
                         <DialogDescription>
-                          Envoyer un email à {booking.customer?.firstName} {booking.customer?.lastName} ({booking.customer?.email})
+                          Envoyer un e-mail  à {booking.customer?.firstName} {booking.customer?.lastName} ({booking.customer?.email})
                         </DialogDescription>
                       </DialogHeader>
                       <div className="grid gap-4 py-4">
@@ -163,7 +164,7 @@ if (bookings.length === 0) {
                             id="subject"
                             value={emailData.subject}
                             onChange={(e) => setEmailData(prev => ({ ...prev, subject: e.target.value }))}
-                            placeholder="Objet de l'email"
+                            placeholder="Objet de l’e-mail "
                           />
                         </div>
                         <div className="grid gap-2">
@@ -172,7 +173,7 @@ if (bookings.length === 0) {
                             id="message"
                             value={emailData.message}
                             onChange={(e) => setEmailData(prev => ({ ...prev, message: e.target.value }))}
-                            placeholder="Message de l'email"
+                            placeholder="Message de l’e-mail "
                             className="min-h-[120px]"
                           />
                         </div>
@@ -185,11 +186,11 @@ if (bookings.length === 0) {
                           onClick={handleSendEmail} 
                           disabled={!emailData.subject.trim() || !emailData.message.trim() || isSending}
                         >
-                          {isSending ? 'Envoi en cours...' : 'Envoyer l\'email'}
+                          {isSending ? 'Envoi en cours ...' : 'Envoyer l’e-mail '}
                         </Button>
                       </DialogFooter>
                     </DialogContent>
-                  </Dialog>
+                  </Dialog> */}
                   
                   <Button
                     size="sm"

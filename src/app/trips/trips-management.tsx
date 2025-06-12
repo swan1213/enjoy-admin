@@ -4,7 +4,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Booking } from "@/types";
 import { Eye, Loader2, Search } from "lucide-react";
-import { SetStateAction, useState } from "react";
+import { useState } from "react";
 import BookingDetailsModal from "./tripdetails";
 import TripTable from "../trip-table";
 interface TripManagementProps {
@@ -34,10 +34,10 @@ interface TripManagementProps {
     return (
      <div className="space-y-6">
       <div className="flex justify-between items-center">
-        <h2 className="text-2xl font-bold text-gray-800">Gestion des voyages</h2>
+        <h2 className="text-2xl font-bold text-gray-800">Gestion des trajets</h2>
         <Button onClick={onRefresh} disabled={loadingBookings} className="flex items-center gap-2">
           {loadingBookings ? <Loader2 className="animate-spin h-4 w-4" /> : null}
-          Refresh bookings
+          Rafraîchir le trajet
         </Button>
       </div>
 
@@ -54,7 +54,7 @@ interface TripManagementProps {
               />
             </div>
             <div className="text-sm text-gray-500">
-              {filteredBookings.length} of {booking.length} trips
+              {filteredBookings.length} of {booking.length} trajet
             </div>
           </div>
           

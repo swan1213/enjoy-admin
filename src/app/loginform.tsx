@@ -24,8 +24,8 @@ export default function LoginForm({ onLogin, loading }: LoginFormProps) {
       <Card className="w-full max-w-md">
         <CardContent className="p-8 space-y-6">
           <div className="text-center">
-            <h1 className="text-2xl font-bold text-gray-800 mb-2">Panneau d'administration</h1>
-            <p className="text-gray-600">Connectez-vous pour accéder au tableau de bord</p>
+            <h1 className="text-2xl font-bold text-gray-800 mb-2">Compte administrateur</h1>
+            <p className="text-gray-600">Connectez-vous pour accéder à votre tableau de bord </p>
           </div>
           <div className="space-y-4">
             <Input 

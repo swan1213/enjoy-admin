@@ -13,7 +13,8 @@ export default function UserTable({ users, onViewDetails }: UserTableProps) {
   if (users.length === 0) {
     return (
       <div className="text-center py-12">
-        <p className="text-gray-500">Aucun utilisateur trouvé correspondant à vos critères de recherche.</p>
+        <p className="text-gray-500">Aucun client ne correspond à vos
+critères de recherche.</p>
       </div>
     );
   }
@@ -24,7 +25,7 @@ export default function UserTable({ users, onViewDetails }: UserTableProps) {
         <thead>
           <tr className="bg-gray-50 border-b">
             <th className="text-left p-4 font-semibold text-gray-700">Nom</th>
-            <th className="text-left p-4 font-semibold text-gray-700">Email</th>
+            <th className="text-left p-4 font-semibold text-gray-700">: E-mail</th>
             <th className="text-left p-4 font-semibold text-gray-700">Téléphone</th>
             <th className="text-left p-4 font-semibold text-gray-700">Statut</th>
             <th className="text-left p-4 font-semibold text-gray-700">Actions</th>

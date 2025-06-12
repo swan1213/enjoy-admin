@@ -59,13 +59,13 @@ export default function UserDetailsModal({
     <Dialog open={open} onOpenChange={onClose}>
       <DialogContent className="max-w-2xl max-h-[80vh] overflow-y-auto">
         <DialogHeader>
-          <DialogTitle>Détails de l'utilisateur</DialogTitle>
+          <DialogTitle> Détails du client </DialogTitle>
         </DialogHeader>
         <div className="space-y-6 p-4">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div className="space-y-2">
               <p><strong>Nom :</strong> {user.firstName} {user.lastName}</p>
-              <p><strong>Email :</strong> {user.email}</p>
+              <p><strong>E-mail :</strong> {user.email}</p>
               <p><strong>Téléphone :</strong> {user.phone}</p>
             </div>
             <div className="space-y-2">

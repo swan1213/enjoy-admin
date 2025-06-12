@@ -15,7 +15,6 @@ export default function AdminPanel() {
   const [token, setToken] = useState('');
   const [users, setUsers] = useState<any[]>([]);
   const [bookings, setBookings] = useState<any[]>([]);
-  const [filteredUsers, setFilteredUsers] = useState<any[]>([]);
   const [currentPage, setCurrentPage] = useState('users');
   const [loading, setLoading] = useState(false);
   const [loadingUsers, setLoadingUsers] = useState(false);
@@ -37,19 +36,7 @@ export default function AdminPanel() {
     }
   }, [currentPage]);
 
-  // Filter users based on search
-  useEffect(() => {
-    if (!userSearch.trim()) {
-      setFilteredUsers(users);
-    } else {
-      const filtered = users.filter(user => 
-        `${user.firstName} ${user.lastName}`.toLowerCase().includes(userSearch.toLowerCase()) ||
-        user.email.toLowerCase().includes(userSearch.toLowerCase()) ||
-        user.phone.includes(userSearch)
-      );
-      setFilteredUsers(filtered);
-    }
-  }, [users, userSearch]);
+
 
   // Filter and sort bookings based on search (nearest date first)
  useEffect(() => {
@@ -143,14 +130,17 @@ export default function AdminPanel() {
 
   const fetchUsers = async (authToken = token) => {
     try {
+      console.log('I am calling')
       setLoadingUsers(true);
      const res = await  axios.get(`${baseUrl}/auth/admin/users/all`, {
       headers:{
         Authorization:`Bearer ${token}`
       }
     })
+    console.log(res.data.data);
       setUsers(res.data.data);
     } catch (err) {
+
       console.error('Error fetching users:', err);
     } finally {
       setLoadingUsers(false);
@@ -230,7 +220,7 @@ export default function AdminPanel() {
             }`}
           >
             <Users className="h-5 w-5 mr-3" />
-            Gestion des utilisateurs
+           Gestion des clients
           </button>
           <button
             onClick={() => setCurrentPage('bookings')}
@@ -239,7 +229,7 @@ export default function AdminPanel() {
             }`}
           >
             <Calendar className="h-5 w-5 mr-3" />
-            Gestion des voyages
+            Gestion des trajets 
           </button>
           <div className="border-t mt-6 pt-6">
             <button
@@ -247,7 +237,7 @@ export default function AdminPanel() {
               className="w-full flex items-center px-6 py-3 text-left hover:bg-red-50 text-red-600 hover:text-red-700 transition-colors"
             >
               <LogOut className="h-5 w-5 mr-3" />
-              Déconnexion
+               Se déconnecter
             </button>
           </div>
         </nav>

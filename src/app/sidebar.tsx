@@ -11,7 +11,7 @@ export default function Sidebar({ currentPage, onPageChange, onLogout }: Sidebar
   return (
     <div className="w-64 bg-white shadow-lg border-r">
       <div className="p-6 border-b">
-        <h1 className="text-xl font-bold text-gray-800">Panneau d'administration</h1>
+        <h1 className="text-xl font-bold text-gray-800">Panneau d'administration </h1>
       </div>
       <nav className="mt-6">
         <button
@@ -21,7 +21,7 @@ export default function Sidebar({ currentPage, onPageChange, onLogout }: Sidebar
           }`}
         >
           <Users className="h-5 w-5 mr-3" />
-          Gestion des utilisateurs
+        Gestion des clients 
         </button>
         <button
           onClick={() => onPageChange('bookings')}
@@ -30,7 +30,7 @@ export default function Sidebar({ currentPage, onPageChange, onLogout }: Sidebar
           }`}
         >
           <Calendar className="h-5 w-5 mr-3" />
-          Gestion des voyages
+         Gestion des trajetss
         </button>
         <div className="border-t mt-6 pt-6">
           <button
@@ -38,7 +38,7 @@ export default function Sidebar({ currentPage, onPageChange, onLogout }: Sidebar
             className="w-full flex items-center px-6 py-3 text-left hover:bg-red-50 text-red-600 hover:text-red-700 transition-colors"
           >
             <LogOut className="h-5 w-5 mr-3" />
-            Déconnexion
+            Se déconnecter 
           </button>
         </div>
       </nav>

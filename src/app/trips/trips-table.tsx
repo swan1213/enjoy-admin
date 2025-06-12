@@ -6,10 +6,11 @@ import { Booking } from '@/types';
 
 interface TripTableProps {
   bookings: Booking[];
+  isLoading: boolean;
   onViewDetails: (booking: Booking) => void;
 }
 
-export default function TripTable({ bookings, onViewDetails }: TripTableProps) {
+export default function TripTable({ bookings, isLoading, onViewDetails }: TripTableProps) {
   if (bookings.length === 0) {
     return (
       <div className="text-center py-12">
