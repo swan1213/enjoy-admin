@@ -191,8 +191,8 @@ const handleOpenEmailModal = (booking: Booking) => {
             <p><strong>Rehausseur :</strong> {selectedBooking.boosterSeat }</p>
           </div>
           <div className="grid grid-cols-2 gap-4">
-            <p><strong>Langue du chauffeur :</strong> {selectedBooking.driverLanguage }</p>
-            <p><strong>Réception avec pancarte :</strong> {selectedBooking.welcomeSign }</p>
+            <p><strong>Langue du chauffeur :</strong> {selectedBooking.driverLanguage=='fr'?'Français':'Espagnol' }</p>
+            <p><strong>Réception avec pancarte:</strong> {selectedBooking.welcomeSign?'Oui':'Non' }</p>
           </div>
         </div>
 
@@ -268,55 +268,51 @@ const handleOpenEmailModal = (booking: Booking) => {
         )}
 
         {/* Action Buttons */}
-        <div className="flex gap-2 pt-4 border-t">
-          {selectedBooking.cancellationStatus === "PENDING" && (
-            <>
-              <Button 
-                onClick={() => {
-                  setApproval(true);
-                }}
-                className="bg-green-600 hover:bg-green-700"
-              >
-                Approuver l'annulation
-              </Button>
-              <Button
-                variant="destructive"
-                onClick={() => {
-                  if (selectedBooking.bookingId) {
-                   handleRejectionConfirm()
-                  }
-                }}
-              >
-                Rejeter l'annulation
-              </Button>
-            </>
-          )}
+        <div className="flex flex-wrap gap-2 pt-4 border-t">
+  {selectedBooking.cancellationStatus === "PENDING" && (
+    <>
+      <Button 
+        onClick={() => setApproval(true)} 
+        className="bg-green-600 hover:bg-green-700 mt-2"
+      >
+        Approuver l'annulation
+      </Button>
+      <Button
+        variant="destructive"
+        onClick={() => {
+          if (selectedBooking.bookingId) handleRejectionConfirm();
+        }}
+        className="mt-2"
+      >
+        Rejeter l'annulation
+      </Button>
+    </>
+  )}
 
-          {/* Cancel Trip Button */}
-          {(!selectedBooking.cancellationStatus?.toUpperCase() || selectedBooking.cancellationStatus.toUpperCase() !== "PENDING") && 
-          selectedBooking.status.toUpperCase() !== "CANCELLED" && selectedBooking.status.toUpperCase() !== "COMPLETED" && (
-            <Button 
-              onClick={() => {
-                setApproval(true);
-              }}
-              variant="destructive"
-              className="bg-red-600 hover:bg-red-700"
-            >
-              Annuler le trajet
-            </Button>
-          )}
+  {(!selectedBooking.cancellationStatus?.toUpperCase() || selectedBooking.cancellationStatus.toUpperCase() !== "PENDING") &&
+    selectedBooking.status.toUpperCase() !== "CANCELLED" &&
+    selectedBooking.status.toUpperCase() !== "COMPLETED" && (
+      <Button 
+        onClick={() => setApproval(true)} 
+        variant="destructive" 
+        className="bg-red-600 hover:bg-red-700 mt-2"
+      >
+        Annuler le trajet
+      </Button>
+  )}
 
-          <Button
-            variant="outline"
-            onClick={() => handleOpenEmailModal(selectedBooking)}
-            className="bg-gray-800 text-white hover:bg-gray-700 flex items-center gap-2"
-          >
-            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 4.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
-            </svg>
-            Envoyer informations du trajet
-          </Button>
-        </div>
+  <Button
+    variant="outline"
+    onClick={() => handleOpenEmailModal(selectedBooking)}
+    className="bg-gray-800 text-white hover:bg-gray-700 flex items-center gap-2 mt-2"
+  >
+    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 4.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+    </svg>
+    Envoyer informations du trajet
+  </Button>
+</div>
+
       </div>
     )}
   </DialogContent>

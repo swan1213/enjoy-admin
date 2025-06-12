@@ -1,18 +1,6 @@
 'use client'
 import { Eye, Mail } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { 
-  Dialog, 
-  DialogContent, 
-  DialogDescription, 
-  DialogFooter, 
-  DialogHeader, 
-  DialogTitle, 
-  DialogTrigger 
-} from '@/components/ui/dialog';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { Textarea } from '@/components/ui/textarea';
 import { Booking } from '@/types';
 import { useState } from 'react';
 import axios from 'axios';
@@ -32,14 +20,7 @@ export default function TripTable({ bookings, onViewDetails, onSendEmail }: Trip
   const [emailData, setEmailData] = useState({ subject: '', message: '' });
   const [isSending, setIsSending] = useState(false);
 
-  const handleOpenEmailModal = (booking: Booking) => {
-    setEmailModal({ open: true, booking });
-    // Pre-fill subject with booking info
-    setEmailData({
-      subject: `Trip Update - ${booking.departureLocation} to ${booking.destinationLocation}`,
-      message: `Dear ${booking.customer?.firstName} ${booking.customer?.lastName},\n\nWe hope this message finds you well. We wanted to reach out regarding your upcoming trip scheduled for ${new Date(booking.tripDateTime).toLocaleDateString()}.\n\nBest regards,\nYour Travel Team`
-    });
-  };
+ 
 
   const handleCloseEmailModal = () => {
     setEmailModal({ open: false, booking: null });
@@ -47,29 +28,7 @@ export default function TripTable({ bookings, onViewDetails, onSendEmail }: Trip
     setIsSending(false);
   };
 
-  const handleSendEmail = async () => {
-    console.log(onSendEmail)
-    if (!emailModal.booking) return;
-    
-    setIsSending(true);
-    try {
-      await axios.post(`${baseUrl}/bookings/admin/send-email`,{
-        subject: emailData.subject,
-        message:emailData.message,
-        email: emailModal.booking.customer.email
-      },{
-        headers:{
-          Authorization:`Bearer ${localStorage.getItem('token')}`
-        }
-      })
-      handleCloseEmailModal();
-      alert('Email sent');
-    } catch (error) {
-      console.error('Failed to send email:', error);
-    } finally {
-      setIsSending(false);
-    }
-  };
+  
 
 if (bookings.length === 0) {
     return (
@@ -118,7 +77,7 @@ recherche.</p>
                   </div>
                 </div>
               </td>
-              <td className="p-4">
+              <td className="p-4 whitespace-nowrap w-full">
                 <span className={`px-3 py-1 rounded-full text-xs font-medium ${
                   booking.status === 'COMPLETED' ? 'bg-green-100 text-green-800' :
                    booking.status === 'PENDING' ? 'bg-yellow-100 text-yellow-800' :
