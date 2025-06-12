@@ -141,9 +141,9 @@ export default function BookingDetailsModal({
                     </p>
                     <p><strong>Statut du paiement :</strong> 
                       <span className={`ml-2 px-2 py-1 rounded text-xs ${
-                        selectedBooking.paymentStatus === 'PAID' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'
+                        selectedBooking.paymentStatus === 'paid' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'
                       }`}>
-                        {selectedBooking.paymentStatus === 'PAID' ? 'PAYÉ' : 'NON PAYÉ'}
+                        {selectedBooking.paymentStatus === 'paid' ? 'PAYÉ' : 'NON PAYÉ'}
                       </span>
                     </p>
                     <p><strong>Statut d'annulation :</strong> {selectedBooking.cancellationStatus === 'PENDING' ? 'EN ATTENTE' : selectedBooking.cancellationStatus || 'Aucun'}</p>

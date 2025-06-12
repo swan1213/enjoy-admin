@@ -22,7 +22,7 @@ export interface Booking {
   createdAt: string;
   status: 'PENDING' | 'COMPLETED' | 'CANCELLED';
   cancellationStatus: string | null;
-  paymentStatus: 'PAID' | 'UNPAID';
+  paymentStatus: 'paid' | 'pending';
   departureLocation: string;
   destinationLocation: string;
   flightNumber: string;
