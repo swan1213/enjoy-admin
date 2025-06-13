@@ -77,8 +77,8 @@ recherche.</p>
                   </div>
                 </div>
               </td>
-              <td className="p-4 whitespace-nowrap w-full">
-                <span className={`px-3 py-1 rounded-full text-xs font-medium ${
+              <td className="p-4 ">
+                <span className={`px-3 py-1 whitespace-nowrap w-full rounded-full text-xs font-medium ${
                   booking.status === 'COMPLETED' ? 'bg-green-100 text-green-800' :
                    booking.status === 'PENDING' ? 'bg-yellow-100 text-yellow-800' :
                    'bg-red-100 text-red-800'
