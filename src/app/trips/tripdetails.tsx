@@ -10,6 +10,8 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Mail } from "lucide-react";
 import { Input } from "@/components/ui/input";
+import RejectionDialog from "./rejection-dialog";
+import toast from "react-hot-toast";
 
 interface BookingDetailsModalProps {
   selectedBooking: Booking | null;
@@ -23,11 +25,9 @@ export default function BookingDetailsModal({
   selectedBooking,
   open,
   onClose,
-  onApproved,
-  onReject,
-
 }: BookingDetailsModalProps) {
   const [approval, setApproval] = useState(false);
+    const [rejected, setRejected] = useState(false);
   const [emailModal, setEmailModal] = useState<{ open: boolean; booking: Booking | null }>({
     open: false,
     booking: null
@@ -53,38 +53,36 @@ const handleOpenEmailModal = (booking: Booking) => {
     setApproval(false);
   };
 
-  const handleApprovalConfirm =async (refundAmount: number) => {
-    if (selectedBooking) {
-        console.log(refundAmount)
-      const action = selectedBooking.cancellationStatus === "PENDING" ? 'APPROVE' : 'CANCEL';
-     await axios.post(`${baseUrl}/bookings/admin/${selectedBooking.bookingId}/handle-cancellation`,{
-        action,
-        refundAmount
-      },{
-        headers:{
-            Authorization:`Bearer ${localStorage.getItem('token')}`
-        }
-      })
-      alert('Remboursement traité avec succès')
-      setApproval(false);
-    }
+   const handleRejectionClose = () => {
+    setRejected(false);
   };
 
-  const handleRejectionConfirm =async () => {
-    if (selectedBooking) {
-      const action ='REJECT';
+  const handleApprovalConfirm =async (refundAmount: number, comment:string) => {
+      try {
+           if (selectedBooking) {
+        console.log(comment)
+      const action = 'APPROVE';
      await axios.post(`${baseUrl}/bookings/admin/${selectedBooking.bookingId}/handle-cancellation`,{
         action,
-        refundAmount:0
+        refundAmount,
+        rejectionOrApprovalComments:comment
       },{
         headers:{
             Authorization:`Bearer ${localStorage.getItem('token')}`
         }
       })
-      alert('Remboursement traité avec succès')
-      setApproval(false);
+      toast.success('Remboursement traité avec succès')
+
     }
-  }; const handleSendEmail = async () => {
+      } catch (error) {
+        toast.error('error occured')   
+      }finally{
+      setApproval(false);
+      }
+  };
+
+ 
+  const handleSendEmail = async () => {
    
     if (!emailModal.booking) return;
     
@@ -280,7 +278,7 @@ const handleOpenEmailModal = (booking: Booking) => {
       <Button
         variant="destructive"
         onClick={() => {
-          if (selectedBooking.bookingId) handleRejectionConfirm();
+          setRejected(true);
         }}
         className="mt-2"
       >
@@ -289,7 +287,7 @@ const handleOpenEmailModal = (booking: Booking) => {
     </>
   )}
 
-  {(!selectedBooking.cancellationStatus?.toUpperCase() || selectedBooking.cancellationStatus.toUpperCase() !== "PENDING") &&
+  {/* {(!selectedBooking.cancellationStatus?.toUpperCase() || selectedBooking.cancellationStatus.toUpperCase() !== "PENDING") &&
     selectedBooking.status.toUpperCase() !== "CANCELLED" &&
     selectedBooking.status.toUpperCase() !== "COMPLETED" && (
       <Button 
@@ -299,7 +297,7 @@ const handleOpenEmailModal = (booking: Booking) => {
       >
         Annuler le trajet
       </Button>
-  )}
+  )} */}
 
   <Button
     variant="outline"
@@ -323,6 +321,11 @@ const handleOpenEmailModal = (booking: Booking) => {
         open={approval} 
         onClose={handleApprovalClose}
         onConfirm={handleApprovalConfirm}
+      />
+       <RejectionDialog 
+        selectedBooking={selectedBooking} 
+        open={rejected} 
+        onClose={handleRejectionClose}
       />
        <Dialog open={emailModal.open && emailModal.booking?.bookingId === selectedBooking?.bookingId} onOpenChange={(open) => !open && handleCloseEmailModal()}>
                     <DialogTrigger asChild>
@@ -376,7 +379,7 @@ const handleOpenEmailModal = (booking: Booking) => {
                         </Button>
                       </DialogFooter>
                     </DialogContent>
-                  </Dialog>
+         </Dialog>
     </>
 
     

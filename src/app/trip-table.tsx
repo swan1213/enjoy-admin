@@ -96,61 +96,7 @@ recherche.</p>
                 )}
               </td>
               <td className="p-4">
-                <div className="flex items-center gap-2">
-                  {/* <Dialog open={emailModal.open && emailModal.booking?.bookingId === booking.bookingId} onOpenChange={(open) => !open && handleCloseEmailModal()}>
-                    <DialogTrigger asChild>
-                      <Button
-                        size="sm"
-                        variant="outline"
-                        onClick={() => handleOpenEmailModal(booking)}
-                        className="flex items-center gap-2"
-                      >
-                        <Mail className="h-4 w-4" />
-                        Envoyer un e-mail 
-                      </Button>
-                    </DialogTrigger>
-                    <DialogContent className="sm:max-w-[525px]">
-                      <DialogHeader>
-                        <DialogTitle>Envoyer un e-mail au client </DialogTitle>
-                        <DialogDescription>
-                          Envoyer un e-mail  à {booking.customer?.firstName} {booking.customer?.lastName} ({booking.customer?.email})
-                        </DialogDescription>
-                      </DialogHeader>
-                      <div className="grid gap-4 py-4">
-                        <div className="grid gap-2">
-                          <Label htmlFor="subject">Objet</Label>
-                          <Input
-                            id="subject"
-                            value={emailData.subject}
-                            onChange={(e) => setEmailData(prev => ({ ...prev, subject: e.target.value }))}
-                            placeholder="Objet de l’e-mail "
-                          />
-                        </div>
-                        <div className="grid gap-2">
-                          <Label htmlFor="message">Message</Label>
-                          <Textarea
-                            id="message"
-                            value={emailData.message}
-                            onChange={(e) => setEmailData(prev => ({ ...prev, message: e.target.value }))}
-                            placeholder="Message de l’e-mail "
-                            className="min-h-[120px]"
-                          />
-                        </div>
-                      </div>
-                      <DialogFooter>
-                        <Button variant="outline" onClick={handleCloseEmailModal} disabled={isSending}>
-                          Annuler
-                        </Button>
-                        <Button 
-                          onClick={handleSendEmail} 
-                          disabled={!emailData.subject.trim() || !emailData.message.trim() || isSending}
-                        >
-                          {isSending ? 'Envoi en cours ...' : 'Envoyer l’e-mail '}
-                        </Button>
-                      </DialogFooter>
-                    </DialogContent>
-                  </Dialog> */}
-                  
+                <div className="flex items-center gap-2">    
                   <Button
                     size="sm"
                     variant="outline"
