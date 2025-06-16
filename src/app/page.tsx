@@ -210,7 +210,14 @@ export default function AdminPanel() {
       {/* Sidebar */}
       <div className="w-64 bg-white shadow-lg border-r">
         <div className="p-6 border-b">
-          <h1 className="text-xl font-bold text-gray-800">Panneau d'administration</h1>
+            <div className="flex justify-right mb-4">
+              <img 
+                src="/logo_enjoy.svg" 
+                alt="Admin Panel Logo" 
+                className="w-18 h-18"
+              />
+            </div>
+          <h1 className="text-sm font-bold text-gray-800">Panneau d'administration</h1>
         </div>
         <nav className="mt-6">
           <button

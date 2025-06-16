@@ -1,4 +1,5 @@
 'use client'
+
 import { useState } from 'react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
@@ -19,16 +20,27 @@ export default function LoginForm({ onLogin, loading }: LoginFormProps) {
     await onLogin(email, password);
   };
 
-    return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-100">
-      <Card className="w-full max-w-md">
+  return (
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 to-indigo-100">
+      <Card className="w-full max-w-md shadow-xl">
         <CardContent className="p-8 space-y-6">
-          <div className="text-center">
+          {/* Logo Section */}
+          <div className="text-center mb-8">
+            <div className="flex justify-center mb-6">
+              <img 
+                src="/logo_enjoy.svg" 
+                alt="Admin Panel Logo" 
+                className="w-24 h-24"
+              />
+            </div>
             <h1 className="text-2xl font-bold text-gray-800 mb-2">Compte administrateur</h1>
-            <p className="text-gray-600">Connectez-vous pour accéder à votre tableau de bord </p>
+            <p className="text-gray-600">Connectez-vous pour accéder à votre tableau de bord</p>
           </div>
-          <div className="space-y-4">
+
+          {/* Form Section */}
+          <form onSubmit={handleSubmit} className="space-y-4">
             <Input 
+              type="email"
               placeholder="Adresse email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
@@ -44,14 +56,14 @@ export default function LoginForm({ onLogin, loading }: LoginFormProps) {
               required
             />
             <Button 
-              onClick={handleSubmit}
+              type="submit"
               className="w-full h-11"
               disabled={loading}
             >
               {loading ? <Loader2 className="animate-spin h-4 w-4 mr-2" /> : null}
               Se connecter
             </Button>
-          </div>
+          </form>
         </CardContent>
       </Card>
     </div>
