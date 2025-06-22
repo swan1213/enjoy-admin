@@ -251,9 +251,26 @@ export default function AdminPanel() {
     }
   };
 
+    const createLegal = async (legalData: { title: string; content: string }) => {
+    try {
+      const res = await axios.post(`${baseUrl}/legal`, legalData, {
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
+      });
+      fetchLegalContent();
+      toast.success('Vehicle created successfully');
+      return res.data;
+    } catch (error) {
+      console.error('Error creating vehicle:', error);
+      toast.error('Error creating vehicle');
+      throw error;
+    }
+  };
+
   const updateVehicle = async (vehicleId: string, vehicleData: { vehicleType?: string; price?: number }) => {
     try {
-      const res = await axios.patch(`${baseUrl}/vehicles/${vehicleId}`, vehicleData, {
+      const res = await axios.patch(`${baseUrl}/vehicles/${vehicleId}/edit`, vehicleData, {
         headers: {
           Authorization: `Bearer ${token}`
         }
@@ -264,6 +281,24 @@ export default function AdminPanel() {
     } catch (error) {
       console.error('Error updating vehicle:', error);
       toast.error('Error updating vehicle');
+      throw error;
+    }
+  };
+
+   const updateRoute = async (routeId: string, routeData: { price?: number }) => {
+    try {
+
+      const res = await axios.patch(`${baseUrl}/vehicles/${routeId}/route/edit`, routeData, {
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
+      });
+      fetchVehicles();
+      toast.success('Route updated successfully');
+      return res.data;
+    } catch (error) {
+      console.error('Error updating vehicle:', error);
+      toast.error('Error updating route');
       throw error;
     }
   };
@@ -286,10 +321,10 @@ export default function AdminPanel() {
     }
   };
 
-  const updateLegalContent = async (postId: string, content: string) => {
+  const updateLegalContent = async (postId: string, content: string, title?:string) => {
     try {
       const res = await axios.patch(`${baseUrl}/legal/${postId}`, 
-        { content }, 
+        { content , title}, 
         {
           headers: {
             Authorization: `Bearer ${token}`
@@ -399,6 +434,7 @@ export default function AdminPanel() {
               vehicles={vehicles} 
               loading={loadingVehicles}
               searchValue={vehicleSearch}
+              onUpdateRoute={updateRoute}
               onSearch={(e) => setVehicleSearch(e.target.value)}
               onRefresh={() => fetchVehicles()}
               onCreateVehicle={createVehicle}
@@ -408,6 +444,7 @@ export default function AdminPanel() {
             <LegalContentManagement 
               legalContent={legalContent}
               loading={loadingLegalContent}
+              onCreateContent={createLegal}
               onRefresh={() => fetchLegalContent()}
               onUpdateContent={updateLegalContent}
             />

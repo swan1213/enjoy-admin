@@ -16,26 +16,37 @@ interface LegalContentManagementProps {
   legalContent: LegalContent[];
   loading: boolean;
   onRefresh: () => void;
-  onUpdateContent: (postId: string, content: string) => Promise<any>;
+  onUpdateContent: (postId: string, content: string, title?: string) => Promise<any>;
+  onCreateContent: (legalData: { title: string; content: string }) => Promise<any>;
 }
 
 export default function LegalContentManagement({
   legalContent,
   loading,
   onRefresh,
-  onUpdateContent
+  onUpdateContent,
+  onCreateContent
 }: LegalContentManagementProps) {
   const [editingContent, setEditingContent] = useState<string | null>(null);
   const [updatingContent, setUpdatingContent] = useState(false);
+  const [creatingContent, setCreatingContent] = useState(false);
+  const [showCreateForm, setShowCreateForm] = useState(false);
   const [previewMode, setPreviewMode] = useState<{ [key: string]: boolean }>({});
   
   const [editContentData, setEditContentData] = useState({
+    title: '',
     content: ''
+  });
+
+  const [newContentData, setNewContentData] = useState({
+    title: '',
+    content: '',
   });
 
   const handleEditClick = (content: LegalContent) => {
     setEditingContent(content.postId);
     setEditContentData({
+      title: content.title || '',
       content: content.content
     });
   };
@@ -47,7 +58,7 @@ export default function LegalContentManagement({
 
     try {
       setUpdatingContent(true);
-      await onUpdateContent(postId, editContentData.content);
+      await onUpdateContent(postId, editContentData.content, editContentData.title.trim() || undefined);
       setEditingContent(null);
     } catch (error) {
       console.error('Error updating content:', error);
@@ -56,9 +67,36 @@ export default function LegalContentManagement({
     }
   };
 
+  const handleCreateContent = async () => {
+    if (!newContentData.content.trim()) {
+      return;
+    }
+
+    try {
+      setCreatingContent(true);
+      await onCreateContent(
+        {
+          title: newContentData.title,
+          content: newContentData.content
+        }
+      );
+      setShowCreateForm(false);
+      setNewContentData({ title: '', content: ''});
+    } catch (error) {
+      console.error('Error creating content:', error);
+    } finally {
+      setCreatingContent(false);
+    }
+  };
+
+  const cancelCreate = () => {
+    setShowCreateForm(false);
+    setNewContentData({ title: '', content: '', });
+  };
+
   const cancelEdit = () => {
     setEditingContent(null);
-    setEditContentData({ content: '' });
+    setEditContentData({ title: '', content: '' });
   };
 
   const togglePreview = (postId: string) => {
@@ -116,14 +154,23 @@ export default function LegalContentManagement({
             Gérez les documents légaux, politiques et conditions d'utilisation
           </p>
         </div>
-        <button
-          onClick={onRefresh}
-          disabled={loading}
-          className="flex items-center px-4 py-2 text-gray-600 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 disabled:opacity-50"
-        >
-          <RefreshCw className={`h-4 w-4 mr-2 ${loading ? 'animate-spin' : ''}`} />
-          Actualiser
-        </button>
+        <div className="flex space-x-3">
+          <button
+            onClick={() => setShowCreateForm(true)}
+            className="flex items-center px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+          >
+            <FileText className="h-4 w-4 mr-2" />
+            Nouveau document
+          </button>
+          <button
+            onClick={onRefresh}
+            disabled={loading}
+            className="flex items-center px-4 py-2 text-gray-600 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 disabled:opacity-50"
+          >
+            <RefreshCw className={`h-4 w-4 mr-2 ${loading ? 'animate-spin' : ''}`} />
+            Actualiser
+          </button>
+        </div>
       </div>
 
       {/* Content Stats */}
@@ -179,6 +226,89 @@ export default function LegalContentManagement({
         </div>
       </div>
 
+      {/* Create Form */}
+      {showCreateForm && (
+        <div className="bg-white rounded-lg shadow-sm border overflow-hidden">
+          <div className="px-6 py-4 border-b border-gray-200 bg-blue-50">
+            <h3 className="text-lg font-medium text-gray-900 flex items-center">
+              <FileText className="h-5 w-5 mr-2 text-blue-600" />
+              Créer un nouveau document légal
+            </h3>
+          </div>
+          
+          <div className="p-6 space-y-4">
+            <div className="flex items-center justify-between mb-4">
+              <div className="flex space-x-2">
+                <button
+                  onClick={handleCreateContent}
+                  disabled={creatingContent || !newContentData.content.trim()}
+                  className="flex items-center px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                  <Save className="h-4 w-4 mr-2" />
+                  {creatingContent ? 'Création...' : 'Créer le document'}
+                </button>
+                <button
+                  onClick={cancelCreate}
+                  disabled={creatingContent}
+                  className="flex items-center px-4 py-2 bg-gray-500 text-white rounded-lg hover:bg-gray-600 disabled:opacity-50"
+                >
+                  Annuler
+                </button>
+              </div>
+            </div>
+
+          
+           
+
+            {/* Title Input */}
+            <div className="bg-gray-50 p-4 rounded-lg">
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                <span className="flex items-center">
+                  <FileText className="h-4 w-4 mr-1" />
+                  Titre du document (optionnel)
+                </span>
+              </label>
+              <input
+                type="text"
+                value={newContentData.title}
+                onChange={(e) => setNewContentData(prev => ({ ...prev, title: e.target.value }))}
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white"
+                placeholder="Ex: Politique de confidentialité, Conditions d'utilisation..."
+              />
+              <p className="text-xs text-gray-500 mt-1">
+                Le titre sera affiché en haut du document
+              </p>
+            </div>
+
+            {/* Content Input */}
+            <div className="bg-white border rounded-lg p-4">
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                <span className="flex items-center">
+                  <Edit className="h-4 w-4 mr-1" />
+                  Contenu du document *
+                </span>
+              </label>
+              <textarea
+                value={newContentData.content}
+                onChange={(e) => setNewContentData(prev => ({ ...prev, content: e.target.value }))}
+                rows={15}
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 font-mono text-sm resize-vertical"
+                placeholder="Entrez le contenu du document légal..."
+                required
+              />
+              <div className="flex justify-between items-center mt-2">
+                <p className="text-xs text-gray-500">
+                  {newContentData.content.length} caractères
+                </p>
+                <p className="text-xs text-gray-500">
+                  * Champ obligatoire
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* Content List */}
       <div className="bg-white rounded-lg shadow-sm border overflow-hidden">
         <div className="px-6 py-4 border-b border-gray-200">
@@ -228,20 +358,51 @@ export default function LegalContentManagement({
                         </button>
                       </div>
                     </div>
-                    <div>
+                    
+                    {/* Title Input */}
+                    <div className="bg-gray-50 p-4 rounded-lg">
                       <label className="block text-sm font-medium text-gray-700 mb-2">
-                        Contenu
+                        <span className="flex items-center">
+                          <FileText className="h-4 w-4 mr-1" />
+                          Titre du document (optionnel)
+                        </span>
+                      </label>
+                      <input
+                        type="text"
+                        value={editContentData.title}
+                        onChange={(e) => setEditContentData(prev => ({ ...prev, title: e.target.value }))}
+                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white"
+                        placeholder="Ex: Politique de confidentialité, Conditions d'utilisation..."
+                      />
+                      <p className="text-xs text-gray-500 mt-1">
+                        Le titre sera affiché en haut du document
+                      </p>
+                    </div>
+                    
+                    {/* Content Input */}
+                    <div className="bg-white border rounded-lg p-4">
+                      <label className="block text-sm font-medium text-gray-700 mb-2">
+                        <span className="flex items-center">
+                          <Edit className="h-4 w-4 mr-1" />
+                          Contenu du document *
+                        </span>
                       </label>
                       <textarea
                         value={editContentData.content}
-                        onChange={(e) => setEditContentData({ content: e.target.value })}
+                        onChange={(e) => setEditContentData(prev => ({ ...prev, content: e.target.value }))}
                         rows={15}
-                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 font-mono text-sm"
-                        placeholder="Entrez le contenu du document..."
+                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 font-mono text-sm resize-vertical"
+                        placeholder="Entrez le contenu du document légal..."
+                        required
                       />
-                      <p className="text-xs text-gray-500 mt-1">
-                        {editContentData.content.length} caractères
-                      </p>
+                      <div className="flex justify-between items-center mt-2">
+                        <p className="text-xs text-gray-500">
+                          {editContentData.content.length} caractères
+                        </p>
+                        <p className="text-xs text-gray-500">
+                          * Champ obligatoire
+                        </p>
+                      </div>
                     </div>
                   </div>
                 ) : (
@@ -297,6 +458,9 @@ export default function LegalContentManagement({
                       {previewMode[content.postId] ? (
                         <div className="prose max-w-none">
                           <div className="bg-gray-50 p-4 rounded-lg">
+                            {content.title && (
+                              <h3 className="text-lg font-semibold mb-3 text-gray-900">{content.title}</h3>
+                            )}
                             <pre className="whitespace-pre-wrap text-sm text-gray-800 font-sans">
                               {content.content}
                             </pre>
