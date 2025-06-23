@@ -40,7 +40,7 @@ interface VehicleManagementProps {
   onSearch: (e: React.ChangeEvent<HTMLInputElement>) => void;
   onRefresh: () => void;
   onCreateVehicle: (vehicleData: { vehicleType: string; price: number; pricePerKm: number }) => Promise<any>;
-  onUpdateVehicle: (vehicleId: string, vehicleData: UpdateVehicleDto) => Promise<any>;
+  onUpdateVehicle: (vehicleId: string, vehicleData: { vehicleType: string; price: number; pricePerKm: number }) => Promise<any>;
   onUpdateRoute: (routeId: string, routeData: RouteDto) => Promise<any>;
 }
 
@@ -130,7 +130,9 @@ export default function VehicleManagement({
     try {
       setUpdatingVehicle(true);
       await onUpdateVehicle(vehicleId, {
-        price: parseFloat(editVehicle.pricePerKm),
+        vehicleType: editVehicle.vehicleType,
+        price: parseFloat(editVehicle.price),
+        pricePerKm: parseFloat(editVehicle.pricePerKm)
       });
       setEditingVehicle(null);
     } catch (error) {
@@ -153,7 +155,7 @@ export default function VehicleManagement({
     if (!editRoute.start || !editRoute.destination || !editRoute.price) {
       return;
     }
-   
+
     try {
       setUpdatingRoute(true);
       await onUpdateRoute(routeId, {
@@ -162,7 +164,6 @@ export default function VehicleManagement({
       setEditingRoute(null);
     } catch (error) {
       console.error('Error updating route:', error);
-      
     } finally {
       setUpdatingRoute(false);
     }
@@ -178,7 +179,10 @@ export default function VehicleManagement({
     setEditRoute({ start: '', destination: '', price: '' });
   };
 
-
+  const cancelCreate = () => {
+    setShowCreateForm(false);
+    setNewVehicle({ vehicleType: '', price: '', pricePerKm: '' });
+  };
 
   const totalRoutes = vehicles.reduce((sum, vehicle) => sum + vehicle.fixedRoutes.length, 0);
   const avgPricePerKm = vehicles.length > 0 
@@ -207,17 +211,91 @@ export default function VehicleManagement({
             <RefreshCw className={`h-4 w-4 mr-2 ${loading ? 'animate-spin' : ''}`} />
             Actualiser
           </button>
-          {/* <button
+          <button
             onClick={() => setShowCreateForm(true)}
             className="flex items-center px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
           >
             <Plus className="h-4 w-4 mr-2" />
             Nouveau véhicule
-          </button> */}
+          </button>
         </div>
       </div>
 
-     
+      {/* Create Vehicle Form */}
+      {showCreateForm && (
+        <div className="bg-white p-6 rounded-lg shadow-md border">
+          <h3 className="text-lg font-semibold mb-4">Créer un nouveau véhicule</h3>
+          <div className="space-y-4">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Type de véhicule
+                </label>
+                <input
+                  type="text"
+                  value={newVehicle.vehicleType}
+                  onChange={(e) => setNewVehicle({ ...newVehicle, vehicleType: e.target.value })}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  placeholder="Ex: BERLINE, VAN, SUV..."
+                  required
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Prix minimum (€)
+                </label>
+                <input
+                  type="number"
+                  step="0.01"
+                  min="0"
+                  value={newVehicle.price}
+                  onChange={(e) => setNewVehicle({ ...newVehicle, price: e.target.value })}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  placeholder="0.00"
+                  required
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Prix par km (€)
+                </label>
+                <input
+                  type="number"
+                  step="0.01"
+                  min="0"
+                  value={newVehicle.pricePerKm}
+                  onChange={(e) => setNewVehicle({ ...newVehicle, pricePerKm: e.target.value })}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  placeholder="0.00"
+                  required
+                />
+              </div>
+            </div>
+            <div className="flex justify-end space-x-3">
+              <button
+                type="button"
+                onClick={cancelCreate}
+                className="px-4 py-2 text-gray-600 bg-gray-100 rounded-lg hover:bg-gray-200"
+              >
+                <X className="h-4 w-4 mr-2 inline" />
+                Annuler
+              </button>
+              <button
+                type="button"
+                onClick={(e) => {
+                  e.preventDefault();
+                  handleCreateVehicle(e);
+                }}
+                disabled={creatingVehicle}
+                className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50"
+              >
+                <Save className="h-4 w-4 mr-2 inline" />
+                {creatingVehicle ? 'Création...' : 'Créer'}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Search */}
       <div className="bg-white p-6 rounded-lg shadow-sm border">
@@ -324,7 +402,15 @@ export default function VehicleManagement({
                             className="px-2 py-1 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm"
                             placeholder="Type"
                           />
-                       
+                          <input
+                            type="number"
+                            step="0.01"
+                            min="0"
+                            value={editVehicle.price}
+                            onChange={(e) => setEditVehicle({ ...editVehicle, price: e.target.value })}
+                            className="w-20 px-2 py-1 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm"
+                            placeholder="Prix"
+                          />
                           <input
                             type="number"
                             step="0.01"
@@ -341,7 +427,7 @@ export default function VehicleManagement({
                             {vehicle.vehicleType}
                           </span>
                           <div className="flex items-center space-x-4 text-sm text-gray-600 mt-1">
-                          
+                            <span>Prix minimum: {vehicle.price} €</span>
                             <span>Prix/km: {vehicle.pricePerKm} €</span>
                             <span className="text-blue-600">
                               {vehicle.fixedRoutes.length} itinéraire{vehicle.fixedRoutes.length !== 1 ? 's' : ''}

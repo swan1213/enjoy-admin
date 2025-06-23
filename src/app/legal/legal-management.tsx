@@ -1,144 +1,99 @@
+
+
+
+
 'use client'
 
 import { useState } from 'react';
-import { FileText, RefreshCw, Save, Edit, Eye, EyeOff, Calendar } from 'lucide-react';
+import { Plus, Edit, Trash2, Save, X, FileText } from 'lucide-react';
 
-interface LegalContent {
+interface LegalPage {
   postId: string;
-  title?: string;
+  title: string;
   content: string;
-  type?: string;
-  createdAt?: string;
-  updatedAt?: string;
+  pageTitle: string;
+  createdAt: string;
+  updatedAt: string;
 }
 
-interface LegalContentManagementProps {
-  legalContent: LegalContent[];
+interface LegalPagesManagementProps {
+  legalPages: LegalPage[];
   loading: boolean;
   onRefresh: () => void;
-  onUpdateContent: (postId: string, content: string, title?: string) => Promise<any>;
-  onCreateContent: (legalData: { title: string; content: string }) => Promise<any>;
+  onCreatePage: (pageData: { title: string; content: string; type: string }) => Promise<any>;
+  onUpdatePage: (id: string, pageData: { title: string; content: string; type: string }) => Promise<any>;
+  onDeletePage: (id: string) => void;
 }
 
-export default function LegalContentManagement({
-  legalContent,
-  loading,
-  onRefresh,
-  onUpdateContent,
-  onCreateContent
-}: LegalContentManagementProps) {
-  const [editingContent, setEditingContent] = useState<string | null>(null);
-  const [updatingContent, setUpdatingContent] = useState(false);
-  const [creatingContent, setCreatingContent] = useState(false);
-  const [showCreateForm, setShowCreateForm] = useState(false);
-  const [previewMode, setPreviewMode] = useState<{ [key: string]: boolean }>({});
-  
-  const [editContentData, setEditContentData] = useState({
-    title: '',
-    content: ''
-  });
-
-  const [newContentData, setNewContentData] = useState({
+const LegalPagesManagement = ({ 
+  legalPages, 
+  loading, 
+  onRefresh, 
+  onCreatePage, 
+  onUpdatePage, 
+  onDeletePage 
+}: LegalPagesManagementProps) => {
+  const [showForm, setShowForm] = useState(false);
+  const [editingPage, setEditingPage] = useState<LegalPage | null>(null);
+  const [formData, setFormData] = useState({
     title: '',
     content: '',
+    type: 'terms'
   });
+  const [submitting, setSubmitting] = useState(false);
 
-  const handleEditClick = (content: LegalContent) => {
-    setEditingContent(content.postId);
-    setEditContentData({
-      title: content.title || '',
-      content: content.content
+  const legalPageTypes = [
+    { value: 'terms', label: 'Conditions d\'utilisation' },
+    { value: 'privacy', label: 'Politique de confidentialité' },
+    { value: 'cookies', label: 'Politique des cookies' },
+    { value: 'legal-notice', label: 'Mentions légales' },
+    { value: 'refund', label: 'Politique de remboursement' },
+    { value: 'other', label: 'Autre' }
+  ];
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!formData.title.trim() || !formData.content.trim()) {
+      return;
+    }
+
+    try {
+      setSubmitting(true);
+      if (editingPage) {
+        await onUpdatePage(editingPage.postId, formData);
+      } else {
+        await onCreatePage(formData);
+      }
+      resetForm();
+    } catch (error) {
+      console.error('Error submitting form:', error);
+    } finally {
+      setSubmitting(false);
+    }
+  };
+
+  const resetForm = () => {
+    setFormData({ title: '', content: '', type: 'terms' });
+    setShowForm(false);
+    setEditingPage(null);
+  };
+
+  const handleEdit = (page: LegalPage) => {
+    setEditingPage(page);
+    setFormData({
+       
+      title: page.title,
+      content: page.content,
+      type: page.pageTitle
     });
+    setShowForm(true);
   };
 
-  const handleUpdateContent = async (postId: string) => {
-    if (!editContentData.content.trim()) {
-      return;
-    }
+ 
 
-    try {
-      setUpdatingContent(true);
-      await onUpdateContent(postId, editContentData.content, editContentData.title.trim() || undefined);
-      setEditingContent(null);
-    } catch (error) {
-      console.error('Error updating content:', error);
-    } finally {
-      setUpdatingContent(false);
-    }
-  };
-
-  const handleCreateContent = async () => {
-    if (!newContentData.content.trim()) {
-      return;
-    }
-
-    try {
-      setCreatingContent(true);
-      await onCreateContent(
-        {
-          title: newContentData.title,
-          content: newContentData.content
-        }
-      );
-      setShowCreateForm(false);
-      setNewContentData({ title: '', content: ''});
-    } catch (error) {
-      console.error('Error creating content:', error);
-    } finally {
-      setCreatingContent(false);
-    }
-  };
-
-  const cancelCreate = () => {
-    setShowCreateForm(false);
-    setNewContentData({ title: '', content: '', });
-  };
-
-  const cancelEdit = () => {
-    setEditingContent(null);
-    setEditContentData({ title: '', content: '' });
-  };
-
-  const togglePreview = (postId: string) => {
-    setPreviewMode(prev => ({
-      ...prev,
-      [postId]: !prev[postId]
-    }));
-  };
-
-  const getContentTypeLabel = (type?: string) => {
-    switch (type?.toLowerCase()) {
-      case 'privacy':
-        return 'Politique de confidentialité';
-      case 'terms':
-        return 'Conditions d\'utilisation';
-      case 'about':
-        return 'À propos';
-      case 'faq':
-        return 'FAQ';
-      default:
-        return 'Document légal';
-    }
-  };
-
-  const getContentTypeColor = (type?: string) => {
-    switch (type?.toLowerCase()) {
-      case 'privacy':
-        return 'bg-blue-100 text-blue-800';
-      case 'terms':
-        return 'bg-green-100 text-green-800';
-      case 'about':
-        return 'bg-purple-100 text-purple-800';
-      case 'faq':
-        return 'bg-orange-100 text-orange-800';
-      default:
-        return 'bg-gray-100 text-gray-800';
-    }
-  };
-
-  const truncateContent = (content: string, maxLength: number = 150) => {
-    if (content.length <= maxLength) return content;
-    return content.substring(0, maxLength) + '...';
+  const getTypeLabel = (type: string) => {
+    const typeObj = legalPageTypes.find(t => t.value === type);
+    return typeObj ? typeObj.label : type;
   };
 
   return (
@@ -146,344 +101,196 @@ export default function LegalContentManagement({
       {/* Header */}
       <div className="flex justify-between items-center">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900 flex items-center">
-            <FileText className="h-8 w-8 mr-3 text-blue-600" />
-            Gestion du contenu légal
-          </h1>
-          <p className="text-gray-600 mt-1">
-            Gérez les documents légaux, politiques et conditions d'utilisation
-          </p>
+          <h1 className="text-2xl font-bold text-gray-900">Gestion des Pages Légales</h1>
+          <p className="text-gray-600 mt-1">Gérez le contenu des pages légales de votre site</p>
         </div>
-        <div className="flex space-x-3">
-          <button
-            onClick={() => setShowCreateForm(true)}
-            className="flex items-center px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
-          >
-            <FileText className="h-4 w-4 mr-2" />
-            Nouveau document
-          </button>
-          <button
-            onClick={onRefresh}
-            disabled={loading}
-            className="flex items-center px-4 py-2 text-gray-600 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 disabled:opacity-50"
-          >
-            <RefreshCw className={`h-4 w-4 mr-2 ${loading ? 'animate-spin' : ''}`} />
-            Actualiser
-          </button>
-        </div>
+        <button
+          onClick={() => setShowForm(true)}
+          className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg flex items-center gap-2 transition-colors"
+        >
+          <Plus className="h-4 w-4" />
+          Nouvelle page
+        </button>
       </div>
 
-      {/* Content Stats */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-        <div className="bg-white p-6 rounded-lg shadow-sm border">
-          <div className="flex items-center">
-            <div className="p-2 bg-blue-100 rounded-lg">
-              <FileText className="h-6 w-6 text-blue-600" />
-            </div>
-            <div className="ml-4">
-              <p className="text-sm font-medium text-gray-600">Total documents</p>
-              <p className="text-2xl font-bold text-gray-900">{legalContent.length}</p>
-            </div>
-          </div>
-        </div>
-        <div className="bg-white p-6 rounded-lg shadow-sm border">
-          <div className="flex items-center">
-            <div className="p-2 bg-green-100 rounded-lg">
-              <Edit className="h-6 w-6 text-green-600" />
-            </div>
-            <div className="ml-4">
-              <p className="text-sm font-medium text-gray-600">Modifiés récemment</p>
-              <p className="text-2xl font-bold text-gray-900">
-                {legalContent.filter(content => {
-                  if (!content.updatedAt) return false;
-                  const updated = new Date(content.updatedAt);
-                  const weekAgo = new Date();
-                  weekAgo.setDate(weekAgo.getDate() - 7);
-                  return updated > weekAgo;
-                }).length}
-              </p>
-            </div>
-          </div>
-        </div>
-        <div className="bg-white p-6 rounded-lg shadow-sm border">
-          <div className="flex items-center">
-            <div className="p-2 bg-orange-100 rounded-lg">
-              <Calendar className="h-6 w-6 text-orange-600" />
-            </div>
-            <div className="ml-4">
-              <p className="text-sm font-medium text-gray-600">Dernière mise à jour</p>
-              <p className="text-sm font-bold text-gray-900">
-                {legalContent.length > 0 && legalContent.some(c => c.updatedAt)
-                  ? new Date(Math.max(...legalContent
-                      .filter(c => c.updatedAt)
-                      .map(c => new Date(c.updatedAt!).getTime())
-                    )).toLocaleDateString('fr-FR')
-                  : 'Aucune'
-                }
-              </p>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      {/* Create Form */}
-      {showCreateForm && (
-        <div className="bg-white rounded-lg shadow-sm border overflow-hidden">
-          <div className="px-6 py-4 border-b border-gray-200 bg-blue-50">
-            <h3 className="text-lg font-medium text-gray-900 flex items-center">
-              <FileText className="h-5 w-5 mr-2 text-blue-600" />
-              Créer un nouveau document légal
-            </h3>
-          </div>
-          
-          <div className="p-6 space-y-4">
-            <div className="flex items-center justify-between mb-4">
-              <div className="flex space-x-2">
+      {/* Form Modal */}
+      {showForm && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+          <div className="bg-white rounded-lg shadow-xl w-full max-w-4xl max-h-[90vh] overflow-hidden">
+            <div className="p-6 border-b">
+              <div className="flex justify-between items-center">
+                <h2 className="text-xl font-semibold">
+                  {editingPage ? 'Modifier la page légale' : 'Nouvelle page légale'}
+                </h2>
                 <button
-                  onClick={handleCreateContent}
-                  disabled={creatingContent || !newContentData.content.trim()}
-                  className="flex items-center px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 disabled:opacity-50 disabled:cursor-not-allowed"
+                  onClick={resetForm}
+                  className="text-gray-400 hover:text-gray-600"
                 >
-                  <Save className="h-4 w-4 mr-2" />
-                  {creatingContent ? 'Création...' : 'Créer le document'}
+                  <X className="h-6 w-6" />
                 </button>
+              </div>
+            </div>
+            
+            <form onSubmit={handleSubmit} className="p-6 space-y-4 overflow-y-auto max-h-[70vh]">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Type de page
+                  </label>
+                  <select
+                    value={formData.type}
+                    onChange={(e) => setFormData({ ...formData, type: e.target.value })}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                    required
+                  >
+                    {legalPageTypes.map((type) => (
+                      <option key={type.value} value={type.value}>
+                        {type.label}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+                
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Titre de la page
+                  </label>
+                  <input
+                    type="text"
+                    value={formData.title}
+                    onChange={(e) => setFormData({ ...formData, title: e.target.value })}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                    placeholder="Ex: Conditions générales d'utilisation"
+                    required
+                  />
+                </div>
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Contenu de la page
+                </label>
+                <textarea
+                  value={formData.content}
+                  onChange={(e) => setFormData({ ...formData, content: e.target.value })}
+                  rows={12}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                  placeholder="Saisissez le contenu de votre page légale..."
+                  required
+                />
+                <p className="text-sm text-gray-500 mt-1">
+                  Vous pouvez utiliser du HTML basique pour la mise en forme.
+                </p>
+              </div>
+
+              <div className="flex justify-end gap-3 pt-4 border-t">
                 <button
-                  onClick={cancelCreate}
-                  disabled={creatingContent}
-                  className="flex items-center px-4 py-2 bg-gray-500 text-white rounded-lg hover:bg-gray-600 disabled:opacity-50"
+                  type="button"
+                  onClick={resetForm}
+                  className="px-4 py-2 text-gray-600 hover:text-gray-800 transition-colors"
                 >
                   Annuler
                 </button>
+                <button
+                  type="submit"
+                  disabled={submitting}
+                  className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-lg flex items-center gap-2 transition-colors disabled:opacity-50"
+                >
+                  <Save className="h-4 w-4" />
+                  {submitting ? 'Enregistrement...' : editingPage ? 'Mettre à jour' : 'Créer'}
+                </button>
               </div>
-            </div>
-
-          
-           
-
-            {/* Title Input */}
-            <div className="bg-gray-50 p-4 rounded-lg">
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                <span className="flex items-center">
-                  <FileText className="h-4 w-4 mr-1" />
-                  Titre du document (optionnel)
-                </span>
-              </label>
-              <input
-                type="text"
-                value={newContentData.title}
-                onChange={(e) => setNewContentData(prev => ({ ...prev, title: e.target.value }))}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white"
-                placeholder="Ex: Politique de confidentialité, Conditions d'utilisation..."
-              />
-              <p className="text-xs text-gray-500 mt-1">
-                Le titre sera affiché en haut du document
-              </p>
-            </div>
-
-            {/* Content Input */}
-            <div className="bg-white border rounded-lg p-4">
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                <span className="flex items-center">
-                  <Edit className="h-4 w-4 mr-1" />
-                  Contenu du document *
-                </span>
-              </label>
-              <textarea
-                value={newContentData.content}
-                onChange={(e) => setNewContentData(prev => ({ ...prev, content: e.target.value }))}
-                rows={15}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 font-mono text-sm resize-vertical"
-                placeholder="Entrez le contenu du document légal..."
-                required
-              />
-              <div className="flex justify-between items-center mt-2">
-                <p className="text-xs text-gray-500">
-                  {newContentData.content.length} caractères
-                </p>
-                <p className="text-xs text-gray-500">
-                  * Champ obligatoire
-                </p>
-              </div>
-            </div>
+            </form>
           </div>
         </div>
       )}
 
-      {/* Content List */}
-      <div className="bg-white rounded-lg shadow-sm border overflow-hidden">
-        <div className="px-6 py-4 border-b border-gray-200">
-          <h3 className="text-lg font-medium text-gray-900">
-            Documents légaux ({legalContent.length})
-          </h3>
-        </div>
-        
+      {/* Legal Pages List */}
+      <div className="bg-white rounded-lg shadow">
         {loading ? (
-          <div className="flex justify-center items-center py-12">
-            <RefreshCw className="h-8 w-8 animate-spin text-blue-600" />
-            <span className="ml-2 text-gray-600">Chargement du contenu...</span>
+          <div className="p-8 text-center">
+            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto"></div>
+            <p className="text-gray-600 mt-4">Chargement des pages légales...</p>
           </div>
-        ) : legalContent.length === 0 ? (
-          <div className="text-center py-12">
+        ) : legalPages?.length === 0 ? (
+          <div className="p-8 text-center">
             <FileText className="h-12 w-12 text-gray-400 mx-auto mb-4" />
-            <p className="text-gray-500">Aucun contenu légal trouvé</p>
+            <h3 className="text-lg font-medium text-gray-900 mb-2">Aucune page légale</h3>
+            <p className="text-gray-600 mb-4">Commencez par créer votre première page légale.</p>
+            <button
+              onClick={() => setShowForm(true)}
+              className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg flex items-center gap-2 mx-auto transition-colors"
+            >
+              <Plus className="h-4 w-4" />
+              Créer une page
+            </button>
           </div>
         ) : (
-          <div className="divide-y divide-gray-200">
-            {legalContent.map((content) => (
-              <div key={content.postId} className="p-6">
-                {editingContent === content.postId ? (
-                  /* Edit Mode */
-                  <div className="space-y-4">
-                    <div className="flex items-center justify-between">
-                      <div className="flex items-center space-x-3">
-                        <span className={`px-2 py-1 text-xs font-medium rounded-full ${getContentTypeColor(content.type)}`}>
-                          {getContentTypeLabel(content.type)}
-                        </span>
-                        <span className="text-sm text-gray-500">ID: {content.postId}</span>
-                      </div>
-                      <div className="flex space-x-2">
-                        <button
-                          onClick={() => handleUpdateContent(content.postId)}
-                          disabled={updatingContent}
-                          className="flex items-center px-3 py-1 bg-green-600 text-white text-sm rounded-lg hover:bg-green-700 disabled:opacity-50"
-                        >
-                          <Save className="h-4 w-4 mr-1" />
-                          {updatingContent ? 'Sauvegarde...' : 'Sauvegarder'}
-                        </button>
-                        <button
-                          onClick={cancelEdit}
-                          className="flex items-center px-3 py-1 bg-gray-500 text-white text-sm rounded-lg hover:bg-gray-600"
-                        >
-                          Annuler
-                        </button>
-                      </div>
-                    </div>
-                    
-                    {/* Title Input */}
-                    <div className="bg-gray-50 p-4 rounded-lg">
-                      <label className="block text-sm font-medium text-gray-700 mb-2">
-                        <span className="flex items-center">
-                          <FileText className="h-4 w-4 mr-1" />
-                          Titre du document (optionnel)
-                        </span>
-                      </label>
-                      <input
-                        type="text"
-                        value={editContentData.title}
-                        onChange={(e) => setEditContentData(prev => ({ ...prev, title: e.target.value }))}
-                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white"
-                        placeholder="Ex: Politique de confidentialité, Conditions d'utilisation..."
-                      />
-                      <p className="text-xs text-gray-500 mt-1">
-                        Le titre sera affiché en haut du document
-                      </p>
-                    </div>
-                    
-                    {/* Content Input */}
-                    <div className="bg-white border rounded-lg p-4">
-                      <label className="block text-sm font-medium text-gray-700 mb-2">
-                        <span className="flex items-center">
-                          <Edit className="h-4 w-4 mr-1" />
-                          Contenu du document *
-                        </span>
-                      </label>
-                      <textarea
-                        value={editContentData.content}
-                        onChange={(e) => setEditContentData(prev => ({ ...prev, content: e.target.value }))}
-                        rows={15}
-                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 font-mono text-sm resize-vertical"
-                        placeholder="Entrez le contenu du document légal..."
-                        required
-                      />
-                      <div className="flex justify-between items-center mt-2">
-                        <p className="text-xs text-gray-500">
-                          {editContentData.content.length} caractères
-                        </p>
-                        <p className="text-xs text-gray-500">
-                          * Champ obligatoire
-                        </p>
-                      </div>
-                    </div>
-                  </div>
-                ) : (
-                  /* View Mode */
-                  <div className="space-y-4">
-                    <div className="flex items-center justify-between">
-                      <div className="flex items-center space-x-3">
-                        <span className={`px-2 py-1 text-xs font-medium rounded-full ${getContentTypeColor(content.type)}`}>
-                          {getContentTypeLabel(content.type)}
-                        </span>
-                        {content.title && (
-                          <h4 className="text-lg font-semibold text-gray-900">{content.title}</h4>
-                        )}
-                        <span className="text-sm text-gray-500">ID: {content.postId}</span>
-                      </div>
-                      <div className="flex space-x-2">
-                        <button
-                          onClick={() => togglePreview(content.postId)}
-                          className="flex items-center px-3 py-1 bg-gray-100 text-gray-700 text-sm rounded-lg hover:bg-gray-200"
-                        >
-                          {previewMode[content.postId] ? (
-                            <>
-                              <EyeOff className="h-4 w-4 mr-1" />
-                              Masquer
-                            </>
-                          ) : (
-                            <>
-                              <Eye className="h-4 w-4 mr-1" />
-                              Aperçu
-                            </>
-                          )}
-                        </button>
-                        <button
-                          onClick={() => handleEditClick(content)}
-                          className="flex items-center px-3 py-1 bg-blue-600 text-white text-sm rounded-lg hover:bg-blue-700"
-                        >
-                          <Edit className="h-4 w-4 mr-1" />
-                          Modifier
-                        </button>
-                      </div>
-                    </div>
-
-                    <div className="text-sm text-gray-600 flex space-x-4">
-                      {content.createdAt && (
-                        <span>Créé le: {new Date(content.createdAt).toLocaleDateString('fr-FR')}</span>
-                      )}
-                      {content.updatedAt && (
-                        <span>Modifié le: {new Date(content.updatedAt).toLocaleDateString('fr-FR')}</span>
-                      )}
-                    </div>
-
-                    <div className="border-t pt-4">
-                      {previewMode[content.postId] ? (
-                        <div className="prose max-w-none">
-                          <div className="bg-gray-50 p-4 rounded-lg">
-                            {content.title && (
-                              <h3 className="text-lg font-semibold mb-3 text-gray-900">{content.title}</h3>
-                            )}
-                            <pre className="whitespace-pre-wrap text-sm text-gray-800 font-sans">
-                              {content.content}
-                            </pre>
-                          </div>
+          <div className="overflow-hidden">
+            <table className="min-w-full divide-y divide-gray-200">
+              <thead className="bg-gray-50">
+                <tr>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    Page
+                  </th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    Type
+                  </th>
+                  
+                  <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    Actions
+                  </th>
+                </tr>
+              </thead>
+              <tbody className="bg-white divide-y divide-gray-200">
+                {legalPages.map((page) => (
+                  <tr key={page.postId} className="hover:bg-gray-50">
+                    <td className="px-6 py-4 whitespace-nowrap">
+                      <div>
+                        <div className="text-sm font-medium text-gray-900">
+                          {page.title}
                         </div>
-                      ) : (
-                        <div className="text-gray-600">
-                          <p className="text-sm">
-                            {truncateContent(content.content)}
-                          </p>
-                          <p className="text-xs text-gray-500 mt-2">
-                            {content.content.length} caractères au total
-                          </p>
+                        <div className="text-sm text-gray-500 truncate max-w-xs">
+                          {page.content.length > 100 
+                            ? `${page.content.substring(0, 100)}...` 
+                            : page.content
+                          }
                         </div>
-                      )}
-                    </div>
-                  </div>
-                )}
-              </div>
-            ))}
+                      </div>
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap">
+                      <span className="inline-flex px-2 py-1 text-xs font-semibold rounded-full bg-blue-100 text-blue-800">
+                        {getTypeLabel(page.pageTitle)}
+                      </span>
+                    </td>
+                  
+                    <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                      <div className="flex justify-end gap-2">
+                        <button
+                          onClick={() => handleEdit(page)}
+                          className="text-blue-600 hover:text-blue-900 p-1 rounded"
+                          title="Modifier"
+                        >
+                          <Edit className="h-4 w-4" />
+                        </button>
+                        <button
+                          onClick={() => onDeletePage(page.postId)}
+                          className="text-red-600 hover:text-red-900 p-1 rounded"
+                          title="Supprimer"
+                        >
+                          <Trash2 className="h-4 w-4" />
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
           </div>
         )}
       </div>
     </div>
   );
-}
+};
+
+export default LegalPagesManagement;

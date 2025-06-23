@@ -251,9 +251,13 @@ export default function AdminPanel() {
     }
   };
 
-    const createLegal = async (legalData: { title: string; content: string }) => {
+    const createLegal = async (legalData: { title: string; content: string, type:string }) => {
     try {
-      const res = await axios.post(`${baseUrl}/legal`, legalData, {
+      const res = await axios.post(`${baseUrl}/legal`, {
+        title:legalData.title,
+        content:legalData.content,
+        pageTitle:legalData.type
+      }, {
         headers: {
           Authorization: `Bearer ${token}`
         }
@@ -268,9 +272,12 @@ export default function AdminPanel() {
     }
   };
 
-  const updateVehicle = async (vehicleId: string, vehicleData: { vehicleType?: string; price?: number }) => {
+  const updateVehicle = async (vehicleId: string, vehicleData: {  price?: number, pricePerKm:number }) => {
     try {
-      const res = await axios.patch(`${baseUrl}/vehicles/${vehicleId}/edit`, vehicleData, {
+      const res = await axios.patch(`${baseUrl}/vehicles/${vehicleId}/edit`, {
+        price:vehicleData.price,
+        pricePerKm:vehicleData.pricePerKm
+      }, {
         headers: {
           Authorization: `Bearer ${token}`
         }
@@ -321,10 +328,11 @@ export default function AdminPanel() {
     }
   };
 
-  const updateLegalContent = async (postId: string, content: string, title?:string) => {
+  const updateLegalContent = async (id:string,pageData:{type: string, content: string, title?:string}) => {
     try {
-      const res = await axios.patch(`${baseUrl}/legal/${postId}`, 
-        { content , title}, 
+      const {content, title, type}= pageData;
+      const res = await axios.patch(`${baseUrl}/legal/${id}`, 
+        { content , title, pageTitle:type}, 
         {
           headers: {
             Authorization: `Bearer ${token}`
@@ -442,11 +450,12 @@ export default function AdminPanel() {
             />
           ) : (
             <LegalContentManagement 
-              legalContent={legalContent}
+              legalPages={legalContent}
               loading={loadingLegalContent}
-              onCreateContent={createLegal}
+              onCreatePage={createLegal}
+              onDeletePage={()=>{}}
               onRefresh={() => fetchLegalContent()}
-              onUpdateContent={updateLegalContent}
+              onUpdatePage={updateLegalContent}
             />
           )}
         </div>
