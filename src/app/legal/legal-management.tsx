@@ -43,7 +43,8 @@ const LegalPagesManagement = ({
 const legalPageTypes = [
   { value: 'terms-of-sale', label: 'Conditions générales de vente' },         
   { value: 'terms-of-use', label: 'Conditions générales d’utilisation' },     
-  { value: 'privacy-policy', label: 'Politique de confidentialité' },         
+  { value: 'privacy-policy', label: 'Politique de confidentialité' },  
+  {value:'legal-notice', label:'Mentions légales'}       
 ];
 
 const languages = [ // Fixed typo: was 'langauage'
@@ -182,7 +183,7 @@ const languages = [ // Fixed typo: was 'langauage'
                     onChange={(e) => setFormData({ ...formData, title: e.target.value })}
                     className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                     placeholder="Ex: Conditions générales d'utilisation"
-                    required
+                    
                   />
                 </div>
               </div>
