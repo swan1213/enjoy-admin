@@ -475,7 +475,7 @@ export default function AdminPanel() {
               legalPages={legalContent}
               loading={loadingLegalContent}
               onCreatePage={createLegal}
-              onDeletePage={()=>deleteLegal}
+              onDeletePage={deleteLegal}
               onRefresh={() => fetchLegalContent()}
               onUpdatePage={updateLegalContent}
             />
