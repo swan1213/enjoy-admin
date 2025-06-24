@@ -254,7 +254,7 @@ export default function AdminPanel() {
     const createLegal = async (legalData: { title: string; content: string, type:string, language:string }) => {
     try {
       const res = await axios.post(`${baseUrl}/legal`, {
-        title:legalData.title,
+        title:legalData.title??null,
         content:legalData.content,
         language:legalData.language,
         pageTitle:legalData.type
