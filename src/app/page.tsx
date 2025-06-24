@@ -251,11 +251,12 @@ export default function AdminPanel() {
     }
   };
 
-    const createLegal = async (legalData: { title: string; content: string, type:string }) => {
+    const createLegal = async (legalData: { title: string; content: string, type:string, language:string }) => {
     try {
       const res = await axios.post(`${baseUrl}/legal`, {
         title:legalData.title,
         content:legalData.content,
+        language:legalData.language,
         pageTitle:legalData.type
       }, {
         headers: {
@@ -328,11 +329,11 @@ export default function AdminPanel() {
     }
   };
 
-  const updateLegalContent = async (id:string,pageData:{type: string, content: string, title?:string}) => {
+  const updateLegalContent = async (id:string,pageData:{type: string, content: string, title?:string, language:string}) => {
     try {
       const {content, title, type}= pageData;
       const res = await axios.patch(`${baseUrl}/legal/${id}`, 
-        { content , title, pageTitle:type}, 
+        { content , title, pageTitle:type, language:pageData.language}, 
         {
           headers: {
             Authorization: `Bearer ${token}`

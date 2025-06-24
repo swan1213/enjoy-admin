@@ -1,7 +1,3 @@
-
-
-
-
 'use client'
 
 import { useState } from 'react';
@@ -12,6 +8,7 @@ interface LegalPage {
   title: string;
   content: string;
   pageTitle: string;
+  language: string; // Added language field
   createdAt: string;
   updatedAt: string;
 }
@@ -20,8 +17,8 @@ interface LegalPagesManagementProps {
   legalPages: LegalPage[];
   loading: boolean;
   onRefresh: () => void;
-  onCreatePage: (pageData: { title: string; content: string; type: string }) => Promise<any>;
-  onUpdatePage: (id: string, pageData: { title: string; content: string; type: string }) => Promise<any>;
+  onCreatePage: (pageData: { title: string; content: string; type: string; language: string }) => Promise<any>;
+  onUpdatePage: (id: string, pageData: { title: string; content: string; type: string; language: string }) => Promise<any>;
   onDeletePage: (id: string) => void;
 }
 
@@ -38,18 +35,21 @@ const LegalPagesManagement = ({
   const [formData, setFormData] = useState({
     title: '',
     content: '',
-    type: 'terms'
+    type: 'terms-of-sale',
+    language: 'fr' // Added language to form data
   });
   const [submitting, setSubmitting] = useState(false);
 
-  const legalPageTypes = [
-    { value: 'terms', label: 'Conditions d\'utilisation' },
-    { value: 'privacy', label: 'Politique de confidentialité' },
-    { value: 'cookies', label: 'Politique des cookies' },
-    { value: 'legal-notice', label: 'Mentions légales' },
-    { value: 'refund', label: 'Politique de remboursement' },
-    { value: 'other', label: 'Autre' }
-  ];
+const legalPageTypes = [
+  { value: 'terms-of-sale', label: 'Conditions générales de vente' },         
+  { value: 'terms-of-use', label: 'Conditions générales d’utilisation' },     
+  { value: 'privacy-policy', label: 'Politique de confidentialité' },         
+];
+
+const languages = [ // Fixed typo: was 'langauage'
+  { value: 'fr', label: 'Français' },         
+  { value: 'en', label: 'English' },    
+];
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -73,7 +73,7 @@ const LegalPagesManagement = ({
   };
 
   const resetForm = () => {
-    setFormData({ title: '', content: '', type: 'terms' });
+    setFormData({ title: '', content: '', type: 'terms-of-sale', language: 'fr' });
     setShowForm(false);
     setEditingPage(null);
   };
@@ -81,19 +81,22 @@ const LegalPagesManagement = ({
   const handleEdit = (page: LegalPage) => {
     setEditingPage(page);
     setFormData({
-       
       title: page.title,
       content: page.content,
-      type: page.pageTitle
+      type: page.pageTitle,
+      language: page.language || 'fr' // Default to 'fr' if language is not set
     });
     setShowForm(true);
   };
 
- 
-
   const getTypeLabel = (type: string) => {
     const typeObj = legalPageTypes.find(t => t.value === type);
     return typeObj ? typeObj.label : type;
+  };
+
+  const getLanguageLabel = (language: string) => {
+    const langObj = languages.find(l => l.value === language);
+    return langObj ? langObj.label : language;
   };
 
   return (
@@ -132,7 +135,7 @@ const LegalPagesManagement = ({
             </div>
             
             <form onSubmit={handleSubmit} className="p-6 space-y-4 overflow-y-auto max-h-[70vh]">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">
                     Type de page
@@ -146,6 +149,24 @@ const LegalPagesManagement = ({
                     {legalPageTypes.map((type) => (
                       <option key={type.value} value={type.value}>
                         {type.label}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Langue
+                  </label>
+                  <select
+                    value={formData.language}
+                    onChange={(e) => setFormData({ ...formData, language: e.target.value })}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                    required
+                  >
+                    {languages.map((lang) => (
+                      <option key={lang.value} value={lang.value}>
+                        {lang.label}
                       </option>
                     ))}
                   </select>
@@ -236,7 +257,9 @@ const LegalPagesManagement = ({
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                     Type
                   </th>
-                  
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    Langue
+                  </th>
                   <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
                     Actions
                   </th>
@@ -263,7 +286,11 @@ const LegalPagesManagement = ({
                         {getTypeLabel(page.pageTitle)}
                       </span>
                     </td>
-                  
+                    <td className="px-6 py-4 whitespace-nowrap">
+                      <span className="inline-flex px-2 py-1 text-xs font-semibold rounded-full bg-green-100 text-green-800">
+                        {getLanguageLabel(page.language || 'fr')}
+                      </span>
+                    </td>
                     <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                       <div className="flex justify-end gap-2">
                         <button
