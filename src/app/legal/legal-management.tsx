@@ -73,6 +73,8 @@ const languages = [ // Fixed typo: was 'langauage'
     }
   };
 
+
+
   const resetForm = () => {
     setFormData({ title: '', content: '', type: 'terms-of-sale', language: 'fr' });
     setShowForm(false);
@@ -215,7 +217,7 @@ const languages = [ // Fixed typo: was 'langauage'
                 </button>
                 <button
                   type="submit"
-                  disabled={submitting}
+                  // disabled={submitting}
                   className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-lg flex items-center gap-2 transition-colors disabled:opacity-50"
                 >
                   <Save className="h-4 w-4" />

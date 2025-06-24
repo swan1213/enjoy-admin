@@ -350,6 +350,27 @@ export default function AdminPanel() {
     }
   };
 
+    const deleteLegal = async (id:string) => {
+    try {
+      
+      const res = await axios.delete(`${baseUrl}/legal/${id}`, 
+        
+        {
+          headers: {
+            Authorization: `Bearer ${token}`
+          }
+        }
+      );
+      fetchLegalContent();
+      toast.success('Legal content updated successfully');
+      return res.data;
+    } catch (error) {
+      console.error('Error updating legal content:', error);
+      toast.error('Error updating legal content');
+      throw error;
+    }
+  };
+
   if (!token) {
     return <LoginForm onLogin={login} loading={loading} />
   }
@@ -454,7 +475,7 @@ export default function AdminPanel() {
               legalPages={legalContent}
               loading={loadingLegalContent}
               onCreatePage={createLegal}
-              onDeletePage={()=>{}}
+              onDeletePage={()=>deleteLegal}
               onRefresh={() => fetchLegalContent()}
               onUpdatePage={updateLegalContent}
             />
