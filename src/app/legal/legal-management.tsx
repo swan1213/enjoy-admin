@@ -54,7 +54,7 @@ const languages = [ // Fixed typo: was 'langauage'
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!formData.title.trim() || !formData.content.trim()) {
+    if (!formData.content.trim()) {
       return;
     }
 
