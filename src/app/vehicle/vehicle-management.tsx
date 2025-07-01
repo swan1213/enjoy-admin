@@ -385,178 +385,209 @@ export default function VehicleManagement({
             <p className="text-gray-500">Aucun véhicule trouvé</p>
           </div>
         ) : (
-          <div className="divide-y divide-gray-200">
-            {vehicles.map((vehicle) => (
-              <div key={vehicle.vehicleId} className="p-6">
-                {/* Vehicle Header */}
-                <div className="flex items-center justify-between mb-4">
-                  <div className="flex items-center space-x-4">
-                    <div className="flex items-center">
-                      <Car className="h-5 w-5 text-gray-400 mr-2" />
-                      {editingVehicle === vehicle.vehicleId ? (
-                        <div className="flex space-x-2">
-                          <input
-                            type="text"
-                            value={editVehicle.vehicleType}
-                            onChange={(e) => setEditVehicle({ ...editVehicle, vehicleType: e.target.value })}
-                            className="px-2 py-1 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm"
-                            placeholder="Type"
-                          />
-                          <input
-                            type="number"
-                            step="0.01"
-                            min="0"
-                            value={editVehicle.price}
-                            onChange={(e) => setEditVehicle({ ...editVehicle, price: e.target.value })}
-                            className="w-20 px-2 py-1 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm"
-                            placeholder="Prix"
-                          />
-                          <input
-                            type="number"
-                            step="0.01"
-                            min="0"
-                            value={editVehicle.pricePerKm}
-                            onChange={(e) => setEditVehicle({ ...editVehicle, pricePerKm: e.target.value })}
-                            className="w-20 px-2 py-1 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm"
-                            placeholder="€/km"
-                          />
-                        </div>
-                      ) : (
-                        <div>
-                          <span className="text-lg font-semibold text-gray-900">
-                            {vehicle.vehicleType}
-                          </span>
-                          <div className="flex items-center space-x-4 text-sm text-gray-600 mt-1">
-                            <span>Prix minimum: {vehicle.price} €</span>
-                            <span>Prix/km: {vehicle.pricePerKm} €</span>
-                            <span className="text-blue-600">
-                              {vehicle.fixedRoutes.length} itinéraire{vehicle.fixedRoutes.length !== 1 ? 's' : ''}
-                            </span>
-                          </div>
-                        </div>
-                      )}
+        <div className="divide-y divide-gray-200">
+  {vehicles.map((vehicle) => (
+    <div key={vehicle.vehicleId} className="p-6">
+      {/* Vehicle Header */}
+      <div className="flex items-center justify-between mb-4">
+        <div className="flex items-center space-x-4">
+          <div className="flex items-center">
+            <Car className="h-5 w-5 text-gray-400 mr-2" />
+            {editingVehicle === vehicle.vehicleId ? (
+              <div className="space-y-2">
+                <div>
+                  <span className="text-lg font-semibold text-gray-900">
+                    {vehicle.vehicleType}
+                  </span>
+                </div>
+                
+                <div className="flex items-center space-x-2">
+                  <label className="text-sm font-medium text-gray-700 w-20">Type:</label>
+                  <input
+                    type="text"
+                    value={editVehicle.vehicleType}
+                    onChange={(e) => setEditVehicle({ ...editVehicle, vehicleType: e.target.value })}
+                    className="px-2 py-1 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm"
+                    placeholder="Type"
+                  />
+                </div>
+                
+                <div className="flex items-center space-x-2">
+                  <label className="text-sm font-medium text-gray-700 w-20">Prix:</label>
+                  <input
+                    type="number"
+                    step="0.01"
+                    min="0"
+                    value={editVehicle.price}
+                    onChange={(e) => setEditVehicle({ ...editVehicle, price: e.target.value })}
+                    className="w-20 px-2 py-1 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm"
+                    placeholder="Prix"
+                  />
+                  <span className="text-sm text-gray-500">€</span>
+                </div>
+                
+                <div className="flex items-center space-x-2">
+                  <label className="text-sm font-medium text-gray-700 w-20">Prix/km:</label>
+                  <input
+                    type="number"
+                    step="0.01"
+                    min="0"
+                    value={editVehicle.pricePerKm}
+                    onChange={(e) => setEditVehicle({ ...editVehicle, pricePerKm: e.target.value })}
+                    className="w-20 px-2 py-1 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm"
+                    placeholder="€/km"
+                  />
+                  <span className="text-sm text-gray-500">€</span>
+                </div>
+              </div>
+            ) : (
+              <div>
+                <span className="text-lg font-semibold text-gray-900">
+                  {vehicle.vehicleType}
+                </span>
+                <div className="flex items-center space-x-4 text-sm text-gray-600 mt-1">
+                  <span>Prix minimum: {vehicle.price} €</span>
+                  <span>Prix/km: {vehicle.pricePerKm} €</span>
+                  <span className="text-blue-600">
+                    {vehicle.fixedRoutes.length} itinéraire{vehicle.fixedRoutes.length !== 1 ? 's' : ''}
+                  </span>
+                </div>
+              </div>
+            )}
+          </div>
+        </div>
+        <div className="flex items-center space-x-2">
+          {editingVehicle === vehicle.vehicleId ? (
+            <>
+                 <button
+                onClick={() => handleUpdateVehicle(vehicle.vehicleId)}
+                disabled={updatingVehicle}
+                className="px-3 py-2 bg-green-600 text-white text-sm font-medium rounded-md hover:bg-green-700 disabled:opacity-50 disabled:cursor-not-allowed min-w-[60px] touch-manipulation"
+              >
+                Sauver
+              </button>
+              <button
+                onClick={cancelVehicleEdit}
+                className="px-3 py-2 bg-gray-500 text-white text-sm font-medium rounded-md hover:bg-gray-600 min-w-[60px] touch-manipulation"
+              >
+                Annuler
+              </button>
+            </>
+            
+          ) : (
+             <button
+              onClick={() => handleEditVehicleClick(vehicle)}
+              className="px-3 py-2 bg-blue-600 text-white text-sm font-medium rounded-md hover:bg-blue-700 min-w-[60px] touch-manipulation"
+            >
+              Éditer
+            </button>
+          )}
+        <button
+            onClick={() => toggleVehicleExpansion(vehicle.vehicleId)}
+            className="px-3 py-2 bg-gray-200 text-gray-700 text-sm font-medium rounded-md hover:bg-gray-300 min-w-[70px] touch-manipulation"
+          >
+            {expandedVehicles.has(vehicle.vehicleId) ? 'Réduire' : 'Étendre'}
+          </button>
+        </div>
+      </div>
+
+      {/* Routes Section */}
+      {expandedVehicles.has(vehicle.vehicleId) && (
+        <div className="ml-7 border-l-2 border-gray-200 pl-6">
+          <h4 className="text-sm font-medium text-gray-700 mb-3 flex items-center">
+            <Route className="h-4 w-4 mr-1" />
+            Itinéraires fixes ({vehicle.fixedRoutes.length})
+          </h4>
+          {vehicle.fixedRoutes.length === 0 ? (
+            <p className="text-sm text-gray-500 italic">Aucun itinéraire fixe défini</p>
+          ) : (
+            <div className="space-y-3">
+              {vehicle.fixedRoutes.map((route) => (
+                <div key={route.routeId} className="flex items-center justify-between bg-gray-50 p-3 rounded-lg">
+                  {editingRoute === route.routeId ? (
+                    <div className="space-y-2 flex-1">
+                      <div className="flex items-center space-x-2">
+                        <label className="text-sm font-medium text-gray-700 w-16">Départ:</label>
+                        <input
+                          type="text"
+                          value={editRoute.start}
+                          onChange={(e) => setEditRoute({ ...editRoute, start: e.target.value })}
+                          className="px-2 py-1 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm"
+                          placeholder="Départ"
+                        />
+                      </div>
+                      
+                      <div className="flex items-center space-x-2">
+                        <label className="text-sm font-medium text-gray-700 w-16">Arrivée:</label>
+                        <input
+                          type="text"
+                          value={editRoute.destination}
+                          onChange={(e) => setEditRoute({ ...editRoute, destination: e.target.value })}
+                          className="px-2 py-1 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm"
+                          placeholder="Destination"
+                        />
+                      </div>
+                      
+                      <div className="flex items-center space-x-2">
+                        <label className="text-sm font-medium text-gray-700 w-16">Prix:</label>
+                        <input
+                          type="number"
+                          step="0.01"
+                          min="0"
+                          value={editRoute.price}
+                          onChange={(e) => setEditRoute({ ...editRoute, price: e.target.value })}
+                          className="w-20 px-2 py-1 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm"
+                          placeholder="Prix"
+                        />
+                        <span className="text-sm text-gray-500">€</span>
+                      </div>
                     </div>
-                  </div>
-                  <div className="flex items-center space-x-2">
-                    {editingVehicle === vehicle.vehicleId ? (
+                  ) : (
+                    <div className="flex items-center space-x-3 flex-1">
+                      <MapPin className="h-4 w-4 text-green-600" />
+                      <span className="text-sm font-medium">{route.start}</span>
+                      <span className="text-gray-400">→</span>
+                      <span className="text-sm font-medium">{route.destination}</span>
+                      <span className="ml-auto text-sm font-semibold text-blue-600">
+                        {route.price} €
+                      </span>
+                    </div>
+                  )}
+                  <div className="flex items-center space-x-1 ml-2">
+                    {editingRoute === route.routeId ? (
                       <>
-                        <button
-                          onClick={() => handleUpdateVehicle(vehicle.vehicleId)}
-                          disabled={updatingVehicle}
-                          className="text-green-600 hover:text-green-900 disabled:opacity-50"
+                         <button
+                          onClick={() => handleUpdateRoute(route.routeId)}
+                          disabled={updatingRoute}
+                          className="px-3 py-2 bg-green-600 text-white text-xs font-medium rounded-md hover:bg-green-700 disabled:opacity-50 disabled:cursor-not-allowed min-w-[60px] touch-manipulation flex-shrink-0"
                         >
-                          <Save className="h-4 w-4" />
+                          Sauver
                         </button>
                         <button
-                          onClick={cancelVehicleEdit}
-                          className="text-gray-600 hover:text-gray-900"
+                          onClick={cancelRouteEdit}
+                          className="px-3 py-2 bg-gray-500 text-white text-xs font-medium rounded-md hover:bg-gray-600 min-w-[60px] touch-manipulation flex-shrink-0"
                         >
-                          <X className="h-4 w-4" />
+                          Annuler
                         </button>
                       </>
                     ) : (
-                      <button
-                        onClick={() => handleEditVehicleClick(vehicle)}
-                        className="text-blue-600 hover:text-blue-900"
+                     <button
+                        onClick={() => handleEditRouteClick(route)}
+                        className="px-3 py-2 bg-blue-600 text-white text-xs font-medium rounded-md hover:bg-blue-700 min-w-[60px] touch-manipulation flex-shrink-0"
                       >
-                        <Edit className="h-4 w-4" />
+                        Éditer
                       </button>
                     )}
-                    <button
-                      onClick={() => toggleVehicleExpansion(vehicle.vehicleId)}
-                      className="text-gray-600 hover:text-gray-900"
-                    >
-                      {expandedVehicles.has(vehicle.vehicleId) ? '−' : '+'}
-                    </button>
                   </div>
                 </div>
-
-                {/* Routes Section */}
-                {expandedVehicles.has(vehicle.vehicleId) && (
-                  <div className="ml-7 border-l-2 border-gray-200 pl-6">
-                    <h4 className="text-sm font-medium text-gray-700 mb-3 flex items-center">
-                      <Route className="h-4 w-4 mr-1" />
-                      Itinéraires fixes ({vehicle.fixedRoutes.length})
-                    </h4>
-                    {vehicle.fixedRoutes.length === 0 ? (
-                      <p className="text-sm text-gray-500 italic">Aucun itinéraire fixe défini</p>
-                    ) : (
-                      <div className="space-y-3">
-                        {vehicle.fixedRoutes.map((route) => (
-                          <div key={route.routeId} className="flex items-center justify-between bg-gray-50 p-3 rounded-lg">
-                            {editingRoute === route.routeId ? (
-                              <div className="flex space-x-2 flex-1">
-                                <input
-                                  type="text"
-                                  value={editRoute.start}
-                                  onChange={(e) => setEditRoute({ ...editRoute, start: e.target.value })}
-                                  className="px-2 py-1 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm"
-                                  placeholder="Départ"
-                                />
-                                <span className="self-center text-gray-400">→</span>
-                                <input
-                                  type="text"
-                                  value={editRoute.destination}
-                                  onChange={(e) => setEditRoute({ ...editRoute, destination: e.target.value })}
-                                  className="px-2 py-1 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm"
-                                  placeholder="Destination"
-                                />
-                                <input
-                                  type="number"
-                                  step="0.01"
-                                  min="0"
-                                  value={editRoute.price}
-                                  onChange={(e) => setEditRoute({ ...editRoute, price: e.target.value })}
-                                  className="w-20 px-2 py-1 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm"
-                                  placeholder="Prix"
-                                />
-                              </div>
-                            ) : (
-                              <div className="flex items-center space-x-3 flex-1">
-                                <MapPin className="h-4 w-4 text-green-600" />
-                                <span className="text-sm font-medium">{route.start}</span>
-                                <span className="text-gray-400">→</span>
-                                <span className="text-sm font-medium">{route.destination}</span>
-                                <span className="ml-auto text-sm font-semibold text-blue-600">
-                                  {route.price} €
-                                </span>
-                              </div>
-                            )}
-                            <div className="flex items-center space-x-1 ml-2">
-                              {editingRoute === route.routeId ? (
-                                <>
-                                  <button
-                                    onClick={() => handleUpdateRoute(route.routeId)}
-                                    disabled={updatingRoute}
-                                    className="text-green-600 hover:text-green-900 disabled:opacity-50"
-                                  >
-                                    <Save className="h-3 w-3" />
-                                  </button>
-                                  <button
-                                    onClick={cancelRouteEdit}
-                                    className="text-gray-600 hover:text-gray-900"
-                                  >
-                                    <X className="h-3 w-3" />
-                                  </button>
-                                </>
-                              ) : (
-                                <button
-                                  onClick={() => handleEditRouteClick(route)}
-                                  className="text-blue-600 hover:text-blue-900"
-                                >
-                                  <Edit className="h-3 w-3" />
-                                </button>
-                              )}
-                            </div>
-                          </div>
-                        ))}
-                      </div>
-                    )}
-                  </div>
-                )}
-              </div>
-            ))}
-          </div>
+              ))}
+            </div>
+          )}
+        </div>
+      )}
+    </div>
+  ))}
+</div>
         )}
       </div>
     </div>
