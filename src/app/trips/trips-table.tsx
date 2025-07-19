@@ -3,7 +3,6 @@ import { Eye } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Booking } from '@/types';
 
-
 interface TripTableProps {
   bookings: Booking[];
   isLoading: boolean;
@@ -18,6 +17,32 @@ export default function TripTable({ bookings, isLoading, onViewDetails }: TripTa
       </div>
     );
   }
+
+  const getStatusDisplay = (status: string) => {
+    switch (status.toUpperCase()) {
+      case 'COMPLETED':
+        return 'Terminné';
+      case 'PENDING':
+        return 'En attente';
+      case 'CANCELLED':
+        return 'Annulé';
+      default:
+        return status;
+    }
+  };
+
+  const getStatusColor = (status: string) => {
+    switch (status.toUpperCase()) {
+      case 'COMPLETED':
+        return 'bg-green-100 text-green-800';
+      case 'PENDING':
+        return 'bg-yellow-100 text-yellow-800';
+      case 'CANCELLED':
+        return 'bg-red-100 text-red-800';
+      default:
+        return 'bg-gray-100 text-gray-800';
+    }
+  };
 
   return (
     <div className="overflow-x-auto">
@@ -42,9 +67,16 @@ export default function TripTable({ bookings, isLoading, onViewDetails }: TripTa
               <td className="p-4 text-gray-600">{booking.customer?.phone}</td>
               <td className="p-4 text-gray-600">{booking.customer?.email}</td>
               <td className="p-4 text-gray-600">
-                {new Date(booking.tripDateTime).toLocaleDateString()} <br />
+                {new Date(booking.tripDateTime).toLocaleDateString('fr-FR', {
+                  day: '2-digit',
+                  month: '2-digit',
+                  year: 'numeric'
+                })} <br />
                 <span className="text-sm text-gray-500">
-                  {new Date(booking.tripDateTime).toLocaleTimeString()}
+                  {new Date(booking.tripDateTime).toLocaleTimeString('fr-FR', {
+                    hour: '2-digit',
+                    minute: '2-digit'
+                  })}
                 </span>
               </td>
               <td className="p-4 text-gray-600">
@@ -54,17 +86,13 @@ export default function TripTable({ bookings, isLoading, onViewDetails }: TripTa
                 </div>
               </td>
               <td className="p-4">
-                <span className={`px-3 py-1 rounded-full text-xs font-medium ${
-                  booking.status === 'COMPLETED' ? 'bg-green-100 text-green-800' : 
-                  booking.status === 'PENDING' ? 'bg-yellow-100 text-yellow-800' : 
-                  'bg-red-100 text-red-800'
-                }`}>
-                  {booking.status}
+                <span className={`px-3 py-1 rounded-full text-xs font-medium ${getStatusColor(booking.status)}`}>
+                  {getStatusDisplay(booking.status)}
                 </span>
                 {booking.cancellationStatus === 'PENDING' && (
                   <div className="mt-1">
-                    <span className="px-2 py-1 rounded-full text-xs bg-orange-100 text-orange-800">
-                      Cancellation Pending
+                    <span className="px-2 py-1 rounded-full text-xs font-medium bg-orange-100 text-orange-800">
+                      Annulation en attente
                     </span>
                   </div>
                 )}
@@ -74,10 +102,10 @@ export default function TripTable({ bookings, isLoading, onViewDetails }: TripTa
                   size="sm"
                   variant="outline"
                   onClick={() => onViewDetails(booking)}
-                  className="flex items-center gap-2"
+                  className="flex items-center gap-2 hover:bg-blue-50 hover:border-blue-200"
                 >
                   <Eye className="h-4 w-4" />
-                  View Details
+                  Voir détails
                 </Button>
               </td>
             </tr>

@@ -21,7 +21,31 @@ export default function TripTable({ bookings, onViewDetails, onSendEmail }: Trip
   const [isSending, setIsSending] = useState(false);
 
  
+ const getStatusDisplay = (status: string) => {
+    switch (status.toUpperCase()) {
+      case 'COMPLETED':
+        return 'Terminé';
+      case 'PENDING':
+        return 'En attente';
+      case 'CANCELLED':
+        return 'Annulé';
+      default:
+        return status;
+    }
+  };
 
+  const getStatusColor = (status: string) => {
+    switch (status.toUpperCase()) {
+      case 'COMPLETED':
+        return 'bg-green-100 text-green-800';
+      case 'PENDING':
+        return 'bg-yellow-100 text-yellow-800';
+      case 'CANCELLED':
+        return 'bg-red-100 text-red-800';
+      default:
+        return 'bg-gray-100 text-gray-800';
+    }
+  };
   const handleCloseEmailModal = () => {
     setEmailModal({ open: false, booking: null });
     setEmailData({ subject: '', message: '' });
@@ -79,13 +103,9 @@ recherche.</p>
               </td>
               <td className="p-4 ">
                 <span className={`px-3 py-1 whitespace-nowrap w-full rounded-full text-xs font-medium ${
-                  booking.status === 'COMPLETED' ? 'bg-green-100 text-green-800' :
-                   booking.status === 'PENDING' ? 'bg-yellow-100 text-yellow-800' :
-                   'bg-red-100 text-red-800'
+                  getStatusColor(booking.status)
                 }`}>
-                  {booking.status.toLowerCase() === 'completed' ? 'Terminé' : 
-                   booking.status.toLowerCase() === 'pending' ? 'En attente' : 
-                   booking.status.toLowerCase() === 'cancelled' ? 'Annulé' : booking.status}
+                  {getStatusDisplay(booking.status)}
                 </span>
                 {booking.cancellationStatus === 'PENDING' && (
                   <div className="mt-1">
